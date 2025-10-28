@@ -1,0 +1,33 @@
+<!--contenedor principal-->
+<div class="page">
+  <!--titulos-->
+  <h1>diagnóstico de conexión</h1>
+  <p>proba la conexión entre vercel (front) y render (back)</p>
+
+  <!--acciones-->
+  <div class="row">
+    <button (click)="probarHealth()" [disabled]="loading()">probar /health</button>
+    <button (click)="probarError()" [disabled]="loading()">probar error</button>
+  </div>
+
+  <!--estado-->
+  @if(loading()){
+    <p class="info">cargando...</p>
+  }
+
+  @if(result() !== ''){
+    <p class="ok">resultado: {{ result() }}</p>
+  } @else {
+    <!--sin resultado-->
+  }
+
+  @if(error() !== ''){
+    <p class="err">error: {{ error() }}</p>
+  }
+
+  <!--tips debug-->
+  <div class="tips">
+    <p>abrir devtools → network → filtrar por "health"</p>
+    <p>si cors esta mal veras blocked by cors policy</p>
+  </div>
+</div>
