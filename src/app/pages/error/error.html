@@ -1,1 +1,40 @@
-<p>error works!</p>
+<div class="container error-section">
+
+  <!--fila centrada-->
+  <div class="row center">
+
+    <!--columna unica para centrar la tarjeta-->
+    <div class="col">
+
+      <!--tarjeta que muestra el mensaje de error-->
+      <div class="card error-card">
+        <div class="card-body">
+          <!--icono de advertencia-->
+          <div class="icono">⚠️</div>
+          <!--titulo-->
+          <h1 class="error-title">Oops! Página no encontrada</h1>
+          <!--codigo http-->
+          <div class="error-code">404</div>
+          <!--mensaje principal-->
+          <p class="mensaje-principal">
+            La página que estás buscando no existe o fue movida.
+          </p>
+          <!--mensaje secundario-->
+          <p class="mensaje-secundario">
+            Volvé a la pantalla principal y seguí recorriendo Rumbo Criollo.
+          </p>
+          
+          <!--contenedor de acciones-->
+          <div class="acciones">
+            <!--boton para volver a publicaciones-->
+            <a routerLink="/publicaciones" class="btn-volver">
+              <i class="bi bi-house-door"></i>
+              Ir al inicio
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

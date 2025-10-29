@@ -1,7 +1,8 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  {
+
+  { //ruta raiz (por defecto)
     path: '',
     pathMatch: 'full',
     redirectTo: 'login'
@@ -23,7 +24,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/mi-perfil/mi-perfil').then((m) => m.MiPerfil)
   },
   {
+    path: 'error',
+    loadComponent: () => import('./pages/error/error').then((m) => m.Error)
+  },
+  { //ruta comodin (si no existe la ruta solicitada)
     path: '**',
-    redirectTo: 'login'
+    redirectTo: 'error'
   }
 ];

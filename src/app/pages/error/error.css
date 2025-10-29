@@ -1,0 +1,110 @@
+/*contenedor general*/
+.container {
+  width: 100%;
+  padding: 4rem 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+/*fila centrada*/
+.row.center {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/*columna adaptable*/
+.col {
+  width: min(640px, 100%);
+}
+
+/*tarjeta principal*/
+.error-card {
+  background: rgba(241, 248, 233, 0.95);
+  border-radius: 1.5rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+/*cuerpo de la tarjeta*/
+.card-body {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: #1b5e20;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/*icono*/
+.icono {
+  font-size: 3rem;
+}
+
+/*titulo*/
+.error-title {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1b5e20;
+}
+
+/*codigo*/
+.error-code {
+  display: inline-block;
+  background: #1b5e20;
+  color: #fb8c00;
+  padding: 0.5rem 1.5rem;
+  border-radius: 999px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/*mensaje principal*/
+.mensaje-principal {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #424242;
+}
+
+/*mensaje secundario*/
+.mensaje-secundario {
+  margin: 0;
+  color: #616161;
+  font-size: 0.95rem;
+}
+
+/*botones*/
+.acciones {
+  display: flex;
+  justify-content: center;
+}
+
+/*boton volver*/
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fb8c00;
+  color: #1b5e20;
+  padding: 0.9rem 1.8rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: filter 0.3s ease;
+}
+
+/*hover boton*/
+.btn-volver:hover {
+  filter: brightness(1.08);
+}
+
+@media (max-width: 640px) {
+  /*ajuste mobile*/
+  .card-body {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .error-title {
+    font-size: 1.8rem;
+  }
+}
