@@ -9,7 +9,7 @@ import { mostrarSwal, swalConOpciones } from '../utils/swal';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class Auth {
   //http y router disponibles
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);

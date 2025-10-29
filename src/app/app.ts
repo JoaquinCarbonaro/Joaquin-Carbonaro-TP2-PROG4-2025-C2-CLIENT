@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core'
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router'
 import { AsyncPipe } from '@angular/common'
 
-import { AuthService } from './services/auth'
+import { Auth } from './services/auth'
 
 @Component({
   selector: 'app-root',
@@ -17,7 +17,7 @@ export class App {
   isMenuOpen = false
 
   //servicio de autenticacion
-  private readonly authService = inject(AuthService)
+  private readonly authService = inject(Auth)
 
   //router para navegar
   private router = inject(Router)
