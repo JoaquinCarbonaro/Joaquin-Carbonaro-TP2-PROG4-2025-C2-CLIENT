@@ -1,6 +1,28 @@
-//entorno local de desarrollo
+//entorno local de desarrollo (localhost)
 export const environment = {
+  //indica que no es version de produccion
   production: false,
-  apiBaseUrl: 'http://localhost:3000', //backend nest local
-  useCookies: false //false porque usamos localstorage en sprint 1
-};
+
+  //url base del backend nest local
+  apiBaseUrl: 'http://localhost:3000',
+
+  //por ahora false
+  useCookies: false,
+
+  //tiempo antes de expirar token para avisar
+  tokenWarningMs: 60000,
+
+  //usuarios predefinidos para accesos rapidos
+  quickLogins: {
+    //credenciales de administrador
+    admin: {
+      identifier: 'admin@rumbo.com',
+      password: 'RumboAdmin123'
+    },
+    //credenciales de usuario normal
+    user: {
+      identifier: 'test@rumbo.com',
+      password: 'RumboTest123'
+    }
+  }
+}

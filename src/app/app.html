@@ -7,12 +7,8 @@
     <!--contenedor interno de la barra superior-->
     <div class="page-container top-bar-inner">
 
-      <!--logo y nombre de la marca con redireccion segun login-->
-      <a
-        class="brand"
-        [routerLink]="(usuario$ | async) ? '/publicaciones' : '/login'"
-        (click)="closeMenu()"
-      >
+      <!--logo y nombre de la marca con redireccion a publicaciones-->
+      <a class="brand" routerLink="/publicaciones" (click)="closeMenu()">
         <img class="brand-logo" src="../assets/images/logo.png" alt="Rumbo Criollo" />
         <span class="brand-name">Rumbo Criollo</span>
       </a>
@@ -43,7 +39,9 @@
           <div class="nav-right">
             <span class="user-chip">
               <i class="bi bi-person"></i>
-              Prueba
+              @if (nombreUsuario$ | async; as nombre) {
+                {{ nombre || 'Tripulante' }}
+              }
             </span>
 
             <!-- boton salir solo icono -->
