@@ -1,0 +1,306 @@
+/*estructura base*/
+.layout {
+  /*altura minima y estructura general*/
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /*fondo con degradado radial y lineal*/
+  background:
+    radial-gradient(1200px 600px at 70% -200px, rgba(79, 195, 247, 0.12), transparent 60%),
+    linear-gradient(180deg, #1b5e20 0%, #184f1c 60%, #1b5e20 100%);
+  color: #f1f8e9;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+/*contenedor unificado (navbar, contenido y footer)*/
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+/*navbar*/
+.top-bar {
+  background: rgba(56, 142, 60, 0.95);
+  border-bottom: 4px solid #f9a825;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+/*contenedor interno del navbar*/
+.top-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;   /*altura consistente*/
+  min-height: 60px;
+  position: relative;         /*referencia para dropdown mobile*/
+}
+
+/*marca*/
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: #f1f8e9;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/*logo de la marca*/
+.brand-logo {
+  height: 50px;
+  transform: scale(1.5);
+  transform-origin: left center;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25));
+}
+
+/*nombre de la marca*/
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f1f8e9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  transition: color 0.25s ease;
+}
+
+/*efecto hover en la marca*/
+.brand:hover .brand-name { color: #f9a825; }
+
+/*navegacion principal*/
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;             /*evita desbordes en tablets*/
+}
+
+/*enlace del navbar*/
+.nav-link {
+  text-decoration: none;
+  color: #f1f8e9;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(79, 195, 247, 0.18);
+  border: 2px solid transparent;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition:
+    transform 0.15s ease,
+    background-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/*efecto hover y focus en enlaces*/
+.nav-link:hover,
+.nav-link:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(79, 195, 247, 0.28);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+/*enlace activo*/
+.active-link {
+  background: #f9a825;
+  color: #1b5e20;
+  border-color: #fb8c00;
+  box-shadow: 0 8px 18px rgba(249, 168, 37, 0.35);
+}
+
+/*seccion usuario y boton salir*/
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto; /* antes: 0.25rem */
+}
+
+/*chip con nombre del usuario*/
+.user-chip {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #e8e8e8;
+  background: rgba(255, 255, 255, 0.08); /* gris oscuro translúcido */
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  line-height: 1;
+  border: 0; /* quitamos borde naranja para que se parezca a la ref */
+}
+
+/*boton de salida solo con icono (estilo referencia)*/
+.btn-logout-icon{
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(255,255,255,0.65);
+  border-radius: 8px;
+  background: transparent;
+  color: #f1f8e9;
+  cursor: pointer;
+  transition: background .15s ease, transform .08s ease, border-color .15s ease;
+  padding: 0;
+  line-height: 0;
+  font-size: 1rem; /* tamaño del ícono */
+}
+
+.btn-logout-icon:hover{
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-logout-icon:active{
+  transform: scale(0.96);
+}
+
+.btn-logout-icon:focus{
+  outline: none;
+  box-shadow: 0 0 0 2px #f9a825; /* acento accesible */
+}
+
+/*boton de cierre de sesion*/
+.btn-logout {
+  border: 2px solid #f1f8e9;
+  background: transparent;
+  color: #f1f8e9;
+  border-radius: 10px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+/*efecto hover en boton logout*/
+.btn-logout:hover,
+.btn-logout:focus-visible {
+  background-color: rgba(241, 248, 233, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+/*boton hamburguesa en version mobile*/
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #f1f8e9;
+  padding: 0;
+  cursor: pointer;
+}
+
+/*icono de hamburguesa*/
+.menu-icon {
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  background: currentColor;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+/*lineas superior e inferior de la hamburguesa*/
+.menu-icon::before,
+.menu-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: currentColor;
+  transition: transform 0.3s ease;
+}
+
+/*posicion de cada linea*/
+.menu-icon::before { top: -7px; }
+.menu-icon::after  { top: 7px; }
+
+/*cambio de color al pasar el mouse*/
+.menu-toggle:hover .menu-icon { color: #f9a825; }
+
+/*contenido principal*/
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  scroll-behavior: smooth;
+}
+
+/*footer*/
+.footer {
+  background: #388e3c;
+  border-top: 4px solid #f9a825;
+  color: #f1f8e9;
+}
+
+/*contenedor interno del footer*/
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/*marca dentro del footer*/
+.footer-brand { display: flex; align-items: center; gap: 0.5rem; }
+
+/*icono de la marca en el footer*/
+.footer-logo { font-size: 1.25rem; }
+
+/*margenes utilitarios*/
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 0.25rem; }
+
+/*responsive*/
+@media (max-width: 900px) {
+  /*ajuste de padding en navbar y contenedor*/
+  .page-container { padding-left: 1rem; padding-right: 1rem; }
+  .top-bar-inner { padding: 0.7rem 1rem; min-height: 56px; }
+
+  /*muestra el boton hamburguesa y convierte el nav en dropdown*/
+  .menu-toggle { display: inline-flex; align-items: center; justify-content: center; }
+  .main-nav {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    padding: 0.9rem;
+    background: rgba(56, 142, 60, 0.98);
+    border: 3px solid #f9a825;
+    border-radius: 16px;
+    display: none;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  /*nav visible cuando esta abierto*/
+  .main-nav.open { display: flex; }
+
+  /*enlaces ocupan todo el ancho en mobile*/
+  .nav-link { width: 100%; text-align: center; }
+
+  /*seccion usuario centrada en mobile*/
+  .nav-right { width: 100%; justify-content: center; margin-top: 0.25rem; }
+
+  /*footer pasa a una columna alineada a la izquierda*/
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.25rem;
+  }
+}
