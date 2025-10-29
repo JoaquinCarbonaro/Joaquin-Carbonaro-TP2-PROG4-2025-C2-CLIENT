@@ -1,0 +1,211 @@
+/*contenedor principal del login*/
+.login-page {
+  width: 100%;
+  max-width: 960px;
+  display: grid;
+  place-items: center;
+}
+
+/*tarjeta del formulario*/
+.card {
+  background-color: #f1f8e9;
+  color: #424242;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 0 4px rgba(79, 195, 247, 0.3);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/*titulo principal*/
+.title {
+  font-size: 2rem;
+  margin: 0;
+  color: #1b5e20;
+}
+
+/*subtitulo*/
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #424242;
+}
+
+/*formulario*/
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/*grupo de campo*/
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/*etiqueta de campo*/
+.field-label {
+  font-weight: 600;
+  color: #1b5e20;
+}
+
+/*entradas de texto*/
+input[type='text'],
+input[type='password'] {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid #4fc3f7;
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: #424242;
+}
+
+/*checkbox de recordar*/
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1b5e20;
+}
+
+/*boton principal*/
+.primary-btn {
+  padding: 0.9rem;
+  background-color: #fb8c00;
+  border: none;
+  border-radius: 999px;
+  color: #1b5e20;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+/*boton secundario*/
+.secondary-btn {
+  padding: 0.8rem 1.4rem;
+  background-color: #4fc3f7;
+  border: none;
+  border-radius: 999px;
+  color: #1b5e20;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+/*hover generico*/
+.primary-btn:hover,
+.secondary-btn:hover {
+  filter: brightness(1.1);
+}
+
+/*estado deshabilitado del boton principal*/
+.primary-btn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/*mensaje de ayuda*/
+.hint {
+  text-align: center;
+  color: #424242;
+}
+
+/*enlace dentro del hint*/
+.hint a {
+  color: #fb8c00;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/*mensaje de error*/
+.error {
+  color: #d84315;
+  font-size: 0.85rem;
+}
+
+/*mensaje del backend*/
+.server-error {
+  background-color: rgba(216, 67, 21, 0.12);
+  color: #bf360c;
+  padding: 0.8rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+}
+
+/*bloque de ingreso rapido*/
+.quick-login {
+  background-color: rgba(79, 195, 247, 0.12);
+  border: 2px dashed rgba(79, 195, 247, 0.6);
+  border-radius: 1rem;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/*titulo del bloque rapido*/
+.quick-title {
+  margin: 0;
+  font-weight: 700;
+  color: #1b5e20;
+}
+
+/*contenedor de botones rapidos*/
+.quick-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/*botones rapidos*/
+.quick-btn {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+/*estilo admin*/
+.quick-btn.admin {
+  background-color: #fdd835;
+  color: #1b5e20;
+}
+
+/*estilo usuario*/
+.quick-btn.user {
+  background-color: #81c784;
+  color: #1b5e20;
+}
+
+/*hover en botones rapidos*/
+.quick-btn:hover {
+  filter: brightness(1.05);
+}
+
+/*estado deshabilitado*/
+.quick-btn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/*texto aclaratorio*/
+.quick-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #424242;
+}
+
+@media (max-width: 640px) {
+  /*espaciado mobile*/
+  .card {
+    padding: 2rem;
+  }
+}

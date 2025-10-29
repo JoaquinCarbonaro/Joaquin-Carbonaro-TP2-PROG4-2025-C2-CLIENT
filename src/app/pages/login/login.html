@@ -1,1 +1,90 @@
-<p>login works!</p>
+<section class="login-page">
+  <!--tarjeta contenedora del formulario-->
+  <div class="card">
+    
+    <!--titulo principal-->
+    <h1 class="title">Ingresá a Rumbo Criollo</h1>
+
+    <!--formulario reactivo de inicio de sesion-->
+    <form [formGroup]="loginForm" (ngSubmit)="submit()" class="form">
+      <!--campo de correo o nombre de usuario-->
+      <label class="field">
+        <span class="field-label">Correo o nombre de usuario</span>
+        <input
+          type="text"
+          formControlName="identifier"
+          placeholder="tu_correo@mochilero.com"
+        />
+        <!--mensaje de error si el campo es invalido-->
+        @if (loginForm.get('identifier')?.invalid && loginForm.get('identifier')?.touched) {
+          <span class="error">Este campo es obligatorio.</span>
+        }
+      </label>
+
+      <!--campo de contraseña-->
+      <label class="field">
+        <span class="field-label">Contraseña</span>
+        <input type="password" formControlName="password" placeholder="Tu clave segura" />
+        <!--mensaje de error si la contraseña no cumple los requisitos-->
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <span class="error">
+            Debe tener 8 caracteres, una mayúscula y un número.
+          </span>
+        }
+      </label>
+
+      <!--opcion para mantener la sesion activa-->
+      <label class="remember">
+        <input type="checkbox" formControlName="remember" />
+        <span>Mantener sesión activa</span>
+      </label>
+
+      <!--mensaje de error del servidor-->
+      @if (serverError) {
+        <div class="server-error">{{ serverError }}</div>
+      }
+
+      <!--boton de envio del formulario-->
+      <button type="submit" class="primary-btn" [disabled]="cargando">
+        <!--texto dinamico segun el estado de carga-->
+        @if (cargando) {
+          Ingresando...
+        } @else {
+          Ingresar
+        }
+      </button>
+    </form>
+
+    <!--bloque de ingreso rapido-->
+    <div class="quick-login">
+      <p class="quick-title">Ingreso rápido</p>
+      <div class="quick-buttons">
+        <!--boton para login rapido de administrador-->
+        <button
+          type="button"
+          class="quick-btn admin"
+          (click)="iniciarSesionRapida('admin')"
+          [disabled]="cargando"
+        >
+          administrador
+        </button>
+
+        <!--boton para login rapido de usuario-->
+        <button
+          type="button"
+          class="quick-btn user"
+          (click)="iniciarSesionRapida('user')"
+          [disabled]="cargando"
+        >
+          usuario
+        </button>
+      </div>
+    </div>
+
+    <!--enlace para redirigir al registro-->
+    <p class="hint">
+      ¿Todavía no tenés cuenta?
+      <a routerLink="/registro">Registrate</a>
+    </p>
+  </div>
+</section>
