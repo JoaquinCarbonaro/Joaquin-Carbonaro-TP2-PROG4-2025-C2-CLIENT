@@ -1,1 +1,118 @@
-<p>registro works!</p>
+<section class="registro-page">
+  <!--tarjeta contenedora del formulario de registro-->
+  <div class="card">
+    <!--titulo-->
+    <h1 class="title">Creá tu usuario mochilero</h1>
+    <!--subtitulo-->
+    <p class="subtitle">Sumate a la comunidad que comparte rutas y mates.</p>
+
+    <!--formulario reactivo de registro-->
+    <form [formGroup]="registerForm" (ngSubmit)="submit()" class="form">
+      <!--grupo doble para nombre y apellido-->
+      <div class="dual-field">
+        <!--nombre-->
+        <label class="field">
+          <span class="field-label">Nombre</span>
+          <input type="text" formControlName="name" placeholder="Esteban" />
+          @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+            <span class="error">Ingresá al menos 2 letras.</span>
+          }
+        </label>
+
+        <!--apellido-->
+        <label class="field">
+          <span class="field-label">Apellido</span>
+          <input type="text" formControlName="lastName" placeholder="Pérez" />
+          @if (registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched) {
+            <span class="error">Ingresá al menos 2 letras.</span>
+          }
+        </label>
+      </div>
+
+      <!--correo-->
+      <label class="field">
+        <span class="field-label">Correo</span>
+        <input type="email" formControlName="email" placeholder="esteban@rumbo.com" />
+        @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+          <span class="error">Revisá que el correo sea válido.</span>
+        }
+      </label>
+
+      <!--nombre de usuario-->
+      <label class="field">
+        <span class="field-label">Nombre de usuario</span>
+        <input type="text" formControlName="username" placeholder="esteban_mochilero" />
+        @if (registerForm.get('username')?.invalid && registerForm.get('username')?.touched) {
+          <span class="error">Debe tener 4 caracteres o más.</span>
+        }
+      </label>
+
+      <!--grupo doble para contraseñas-->
+      <div class="dual-field">
+        <!--contraseña-->
+        <label class="field">
+          <span class="field-label">Contraseña</span>
+          <input type="password" formControlName="password" placeholder="Clave segura" />
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            <span class="error">Debe tener 8 caracteres, una mayúscula y un número.</span>
+          }
+        </label>
+
+        <!--repetir contraseña-->
+        <label class="field">
+          <span class="field-label">Repetí la contraseña</span>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Repetí la clave"
+          />
+          @if (
+            registerForm.hasError('passwordMismatch') &&
+            registerForm.get('confirmPassword')?.touched
+          ) {
+            <span class="error">Las contraseñas deben coincidir.</span>
+          }
+        </label>
+      </div>
+
+      <!--fecha de nacimiento-->
+      <label class="field">
+        <span class="field-label">Fecha de nacimiento</span>
+        <input type="date" formControlName="birthDate" />
+        @if (registerForm.get('birthDate')?.invalid && registerForm.get('birthDate')?.touched) {
+          <span class="error">Seleccioná tu fecha.</span>
+        }
+      </label>
+
+      <!--descripcion personal-->
+      <label class="field">
+        <span class="field-label">Descripción breve</span>
+        <textarea
+          rows="4"
+          formControlName="description"
+          placeholder="Contanos qué te motiva a viajar"
+        ></textarea>
+        @if (registerForm.get('description')?.invalid && registerForm.get('description')?.touched) {
+          <span class="error">Contanos algo sobre vos (máximo 200 caracteres).</span>
+        }
+      </label>
+
+      <!--imagen de perfil-->
+      <label class="field file-field">
+        <span class="field-label">Imagen de perfil</span>
+        <div class="file-input">
+          <input type="file" (change)="onProfileImageChange($event)" />
+          <span class="file-name">{{ selectedImageName }}</span>
+        </div>
+      </label>
+
+      <!--boton principal para enviar formulario-->
+      <button type="submit" class="primary-btn">Registrarme</button>
+    </form>
+
+    <!--enlace para usuarios que ya tienen cuenta-->
+    <p class="hint">
+      ¿Ya tenés cuenta? <a routerLink="/login">Iniciá sesión</a>
+    </p>
+  </div>
+</section>

@@ -1,0 +1,161 @@
+/*contenedor principal*/
+.registro-page {
+  width: 100%;
+  max-width: 960px;
+  display: grid;
+  place-items: center;
+}
+
+/*tarjeta del registro*/
+.card {
+  width: 100%;
+  background-color: #f1f8e9;
+  color: #424242;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 0 4px rgba(249, 168, 37, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/*titulo*/
+.title {
+  margin: 0;
+  font-size: 2.1rem;
+  color: #1b5e20;
+}
+
+/*subtitulo*/
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #424242;
+}
+
+/*formulario*/
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/*fila doble*/
+.dual-field {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/*campo individual*/
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/*label de campo*/
+.field-label {
+  font-weight: 600;
+  color: #1b5e20;
+}
+
+/*inputs y textarea*/
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='date'],
+textarea {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid #4fc3f7;
+  font-size: 1rem;
+  color: #424242;
+  background-color: #ffffff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/*campo de archivo*/
+.file-field {
+  gap: 0.75rem;
+}
+
+/*contenedor del input file*/
+.file-input {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: rgba(79, 195, 247, 0.2);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+}
+
+/*nombre del archivo*/
+.file-name {
+  color: #1b5e20;
+  font-weight: 600;
+}
+
+/*boton principal*/
+.primary-btn {
+  padding: 0.9rem;
+  background-color: #f9a825;
+  border: none;
+  border-radius: 999px;
+  color: #1b5e20;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+/*boton secundario (se usa en otros lugares)*/
+.secondary-btn {
+  padding: 0.8rem 1.4rem;
+  background-color: #4fc3f7;
+  border: none;
+  border-radius: 999px;
+  color: #1b5e20;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+/*hover generico*/
+.primary-btn:hover,
+.secondary-btn:hover {
+  filter: brightness(1.1);
+}
+
+/*mensaje de ayuda*/
+.hint {
+  text-align: center;
+  color: #424242;
+}
+
+/*link en el hint*/
+.hint a {
+  color: #fb8c00;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/*errores*/
+.error {
+  color: #d84315;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 720px) {
+  /*ajuste del grid en mobile*/
+  .dual-field {
+    grid-template-columns: 1fr;
+  }
+
+  /*reduccion de padding*/
+  .card {
+    padding: 2rem;
+  }
+}
