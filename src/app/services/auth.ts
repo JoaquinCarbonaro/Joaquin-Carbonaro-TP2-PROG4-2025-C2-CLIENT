@@ -10,41 +10,43 @@ import { mostrarSwal, swalConOpciones } from '../utils/swal';
   providedIn: 'root'
 })
 export class Auth {
-  //http y router disponibles
+  //inyecto http y router para peticiones y navegacion
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  //estado del usuario
+  //mantengo el estado reactivo del usuario
   private readonly logueado = new BehaviorSubject<boolean>(this.estaLogueado());
   private readonly perfilAdmin = new BehaviorSubject<boolean>(this.esUsuarioAdmin());
   private readonly nombreUsuario = new BehaviorSubject<string>(this.obtenerNombreUsuario());
 
-  //temporizadores para aviso y cierre
+  //uso temporizadores para aviso y cierre de sesion
   private timeoutAviso: any;
   private timeoutLogout: any;
 
-  //observables publicos
+  //expongo observables publicos para los componentes
   usuarioLogueado$ = this.logueado.asObservable();
   usuarioAdmin$ = this.perfilAdmin.asObservable();
   nombreUsuario$ = this.nombreUsuario.asObservable();
 
-  //inicia sesion con email o username
+  //inicio sesion con correo o nombre de usuario
   iniciarSesion(datos: { identifier: string; password: string }): Observable<any> {
+    //armo el body segun si es email o username
     const body: Record<string, string> = { password: datos.password };
     if (datos.identifier.includes('@')) {
       body['email'] = datos.identifier;
     } else {
       body['userName'] = datos.identifier;
     }
+    //envio la peticion al backend
     return this.http.post(`${environment.apiBaseUrl}/auth/login`, body);
   }
 
-  //crea una cuenta nueva
+  //creo un nuevo usuario con los datos del formulario
   crearCuenta(formData: FormData): Observable<any> {
     return this.http.post(`${environment.apiBaseUrl}/auth/registro`, formData);
   }
 
-  //cierra la sesion actual
+  //cierro la sesion actual y limpio datos locales
   cerrarSesion(): void {
     this.limpiarTemporizadores();
     localStorage.removeItem('token');
@@ -53,7 +55,7 @@ export class Auth {
     this.nombreUsuario.next('');
   }
 
-  //guarda el token y prepara vigilancia
+  //guardo el token recibido y preparo la vigilancia
   guardarToken(token: string): void {
     this.limpiarTemporizadores();
     localStorage.setItem('token', token);
@@ -63,7 +65,7 @@ export class Auth {
     this.validarExpiracionToken(token);
   }
 
-  //vuelve a consultar el backend para refrescar el token
+  //pido al backend un nuevo token si el actual es valido
   refrescarToken(): Observable<any> {
     const token = this.obtenerToken();
     if (!token) {
@@ -76,7 +78,7 @@ export class Auth {
     );
   }
 
-  //trae listado de usuarios protegido
+  //traigo el listado de usuarios si tengo permisos
   traerListadoUsuarios(incluirInactivos: boolean = false): Observable<any> {
     const token = this.obtenerToken();
     return this.http.get(`${environment.apiBaseUrl}/usuarios`, {
@@ -85,7 +87,7 @@ export class Auth {
     });
   }
 
-  //verifica el token con el backend
+  //verifico si el token guardado sigue siendo valido
   verificarToken(): Observable<any> {
     const token = this.obtenerToken();
     if (!token) {
@@ -96,12 +98,12 @@ export class Auth {
     });
   }
 
-  //obtiene el token desde storage
+  //obtengo el token desde el localstorage
   obtenerToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  //revisa si la sesion es valida
+  //compruebo si hay una sesion valida segun la expiracion
   estaLogueado(): boolean {
     const token = this.obtenerToken();
     if (!token) return false;
@@ -111,7 +113,7 @@ export class Auth {
     return payload.exp > ahora;
   }
 
-  //saber si es admin
+  //verifico si el usuario tiene perfil administrador
   esUsuarioAdmin(): boolean {
     const token = this.obtenerToken();
     if (!token) return false;
@@ -120,7 +122,7 @@ export class Auth {
     return payload.perfil === 'administrador';
   }
 
-  //trae id desde el token
+  //obtengo el id del usuario desde el token
   obtenerIdUsuario(): string {
     const token = this.obtenerToken();
     if (!token) return '';
@@ -130,7 +132,7 @@ export class Auth {
     return identificador;
   }
 
-  //trae el nombre desde el token
+  //obtengo el nombre del usuario desde el token
   obtenerNombreUsuario(): string {
     const token = this.obtenerToken();
     if (!token) return '';
@@ -139,19 +141,19 @@ export class Auth {
     return payload.nombre ?? payload.userName ?? '';
   }
 
-  //inicia la vigilancia del token guardado
+  //inicio la vigilancia del token actual
   iniciarVigilanciaToken(): void {
     const token = this.obtenerToken();
     if (token) this.validarExpiracionToken(token);
   }
 
-  //limpia temporizadores activos
+  //limpio los temporizadores activos de aviso y logout
   private limpiarTemporizadores(): void {
     if (this.timeoutAviso) clearTimeout(this.timeoutAviso);
     if (this.timeoutLogout) clearTimeout(this.timeoutLogout);
   }
 
-  //valida expiracion y arma avisos
+  //valido la expiracion del token y programo los avisos
   private validarExpiracionToken(token: string): void {
     const payload = this.decodificarToken(token);
     if (!payload || !payload.exp) {
@@ -167,11 +169,13 @@ export class Auth {
     }
     const tiempoRestante = (payload.exp - ahora) * 1000;
     const tiempoAviso = tiempoRestante - environment.tokenWarningMs;
+    //programo aviso antes del cierre si hay tiempo suficiente
     if (tiempoAviso > 0) {
       this.timeoutAviso = setTimeout(() => this.mostrarModalRenovacion(), tiempoAviso);
     } else {
       this.mostrarModalRenovacion();
     }
+    //cierro sesion automaticamente cuando el token expira
     this.timeoutLogout = setTimeout(() => {
       this.cerrarSesion();
       this.router.navigate(['login']);
@@ -179,7 +183,7 @@ export class Auth {
     }, tiempoRestante);
   }
 
-  //muestra modal para extender sesion
+  //muestro modal para extender o cerrar sesion
   private mostrarModalRenovacion(): void {
     swalConOpciones(
       'deseas extender la sesion 15 minutos mas?',
@@ -210,7 +214,7 @@ export class Auth {
     });
   }
 
-  //decodifica el token sin librerias externas
+  //decodifico el token jwt sin librerias externas
   private decodificarToken(token: string): any {
     try {
       const partes = token.split('.');
