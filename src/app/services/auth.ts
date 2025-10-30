@@ -34,7 +34,7 @@ export class Auth {
     if (datos.identifier.includes('@')) {
       body['email'] = datos.identifier;
     } else {
-      body['username'] = datos.identifier;
+      body['userName'] = datos.identifier;
     }
     return this.http.post(`${environment.apiBaseUrl}/auth/login`, body);
   }
@@ -104,13 +104,9 @@ export class Auth {
   //revisa si la sesion es valida
   estaLogueado(): boolean {
     const token = this.obtenerToken();
-    if (!token) {
-      return false;
-    }
+    if (!token) return false;
     const payload = this.decodificarToken(token);
-    if (!payload || !payload.exp) {
-      return false;
-    }
+    if (!payload || !payload.exp) return false;
     const ahora = Math.floor(Date.now() / 1000);
     return payload.exp > ahora;
   }
@@ -118,58 +114,41 @@ export class Auth {
   //saber si es admin
   esUsuarioAdmin(): boolean {
     const token = this.obtenerToken();
-    if (!token) {
-      return false;
-    }
+    if (!token) return false;
     const payload = this.decodificarToken(token);
-    if (!payload) {
-      return false;
-    }
+    if (!payload) return false;
     return payload.perfil === 'administrador';
   }
 
   //trae id desde el token
   obtenerIdUsuario(): string {
     const token = this.obtenerToken();
-    if (!token) {
-      return '';
-    }
+    if (!token) return '';
     const payload = this.decodificarToken(token);
-    if (!payload || !payload.id) {
-      return '';
-    }
-    return payload.id;
+    if (!payload) return '';
+    const identificador = payload.uuid ?? payload.id ?? '';
+    return identificador;
   }
 
   //trae el nombre desde el token
   obtenerNombreUsuario(): string {
     const token = this.obtenerToken();
-    if (!token) {
-      return '';
-    }
+    if (!token) return '';
     const payload = this.decodificarToken(token);
-    if (!payload) {
-      return '';
-    }
+    if (!payload) return '';
     return payload.nombre ?? payload.userName ?? '';
   }
 
   //inicia la vigilancia del token guardado
   iniciarVigilanciaToken(): void {
     const token = this.obtenerToken();
-    if (token) {
-      this.validarExpiracionToken(token);
-    }
+    if (token) this.validarExpiracionToken(token);
   }
 
   //limpia temporizadores activos
   private limpiarTemporizadores(): void {
-    if (this.timeoutAviso) {
-      clearTimeout(this.timeoutAviso);
-    }
-    if (this.timeoutLogout) {
-      clearTimeout(this.timeoutLogout);
-    }
+    if (this.timeoutAviso) clearTimeout(this.timeoutAviso);
+    if (this.timeoutLogout) clearTimeout(this.timeoutLogout);
   }
 
   //valida expiracion y arma avisos
@@ -189,9 +168,7 @@ export class Auth {
     const tiempoRestante = (payload.exp - ahora) * 1000;
     const tiempoAviso = tiempoRestante - environment.tokenWarningMs;
     if (tiempoAviso > 0) {
-      this.timeoutAviso = setTimeout(() => {
-        this.mostrarModalRenovacion();
-      }, tiempoAviso);
+      this.timeoutAviso = setTimeout(() => this.mostrarModalRenovacion(), tiempoAviso);
     } else {
       this.mostrarModalRenovacion();
     }
@@ -237,9 +214,7 @@ export class Auth {
   private decodificarToken(token: string): any {
     try {
       const partes = token.split('.');
-      if (partes.length < 2) {
-        return null;
-      }
+      if (partes.length < 2) return null;
       const base64 = partes[1].replace(/-/g, '+').replace(/_/g, '/');
       const decoded = decodeURIComponent(
         atob(base64)
