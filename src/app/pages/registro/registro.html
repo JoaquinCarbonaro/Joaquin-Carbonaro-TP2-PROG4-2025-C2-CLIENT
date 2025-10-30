@@ -1,5 +1,6 @@
 <section class="registro-page">
-  <!--tarjeta contenedora del formulario de registro-->
+  
+  <!--formulario de registro-->
   <div class="card">
     <!--titulo-->
     <h1 class="title">Creá tu usuario mochilero</h1>
@@ -15,7 +16,7 @@
           <span class="field-label">Nombre</span>
           <input type="text" formControlName="name" placeholder="Esteban" />
           @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
-            <span class="error">Ingresá al menos 2 letras.</span>
+            <span class="error">Ingresá solo letras (mínimo 2).</span>
           }
         </label>
 
@@ -24,7 +25,7 @@
           <span class="field-label">Apellido</span>
           <input type="text" formControlName="lastName" placeholder="Pérez" />
           @if (registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched) {
-            <span class="error">Ingresá al menos 2 letras.</span>
+            <span class="error">Ingresá solo letras (mínimo 2).</span>
           }
         </label>
       </div>
@@ -43,7 +44,7 @@
         <span class="field-label">Nombre de usuario</span>
         <input type="text" formControlName="username" placeholder="esteban_mochilero" />
         @if (registerForm.get('username')?.invalid && registerForm.get('username')?.touched) {
-          <span class="error">Debe tener 4 caracteres o más.</span>
+          <span class="error">Debe tener entre 4 y 20 caracteres. Debe empezar con una letra y sin espacios.</span>
         }
       </label>
 
@@ -93,7 +94,7 @@
           placeholder="Contanos qué te motiva a viajar"
         ></textarea>
         @if (registerForm.get('description')?.invalid && registerForm.get('description')?.touched) {
-          <span class="error">Contanos algo sobre vos (máximo 200 caracteres).</span>
+          <span class="error">Contanos algo sobre vos (entre 5 y 200 caracteres).</span>
         }
       </label>
 
@@ -101,13 +102,15 @@
       <label class="field file-field">
         <span class="field-label">Imagen de perfil</span>
         <div class="file-input">
-          <input type="file" (change)="onProfileImageChange($event)" />
+          <input type="file" accept="image/*" (change)="onProfileImageChange($event)" />
           <span class="file-name">{{ selectedImageName }}</span>
         </div>
       </label>
 
       <!--boton principal para enviar formulario-->
-      <button type="submit" class="primary-btn">Registrarme</button>
+      <button type="submit" class="primary-btn" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Registrando...' : 'Registrarme' }}
+      </button>
     </form>
 
     <!--enlace para usuarios que ya tienen cuenta-->
