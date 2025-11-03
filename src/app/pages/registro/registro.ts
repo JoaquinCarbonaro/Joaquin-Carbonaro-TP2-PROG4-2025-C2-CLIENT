@@ -9,8 +9,9 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-
 import { Auth } from '../../services/auth';
+import { crearValidadorFechaNacimiento, MENSAJE_FECHA_FUTURA, MENSAJE_MENOR_EDAD } from '../../utils/date-validators';
+import { esArchivoImagenValido, MENSAJE_IMAGEN_INVALIDA } from '../../utils/file-upload';
 import { mostrarSwal } from '../../utils/swal';
 
 //defino validador para nombres y apellidos
@@ -35,9 +36,11 @@ const usernameValidator = (min = 4, max = 20): ValidatorFn => (c: AbstractContro
   if (!v) return { required: true };
   if (v.length < min) return { minlength: { requiredLength: min, actualLength: v.length } };
   if (v.length > max) return { maxlength: { requiredLength: max, actualLength: v.length } };
-  //permito letras, numeros y guion bajo, sin espacios
-  return /^[a-zA-Z0-9](?:_?[a-zA-Z0-9])*$/.test(v) ? null : { usernamePattern: true };
+
+  //debe empezar con letra y puede contener letras, numeros, "_" o "."
+  return /^[A-Za-z][A-Za-z0-9_.]*$/.test(v) ? null : { usernamePattern: true };
 };
+
 
 @Component({
   standalone: true,
@@ -71,7 +74,10 @@ export class Registro {
         updateOn: 'blur'
       }),
       confirmPassword: this.fb.control('', { validators: [Validators.required], updateOn: 'blur' }),
-      birthDate: this.fb.control('', { validators: [Validators.required], updateOn: 'blur' }),
+      birthDate: this.fb.control('', {
+        validators: [crearValidadorFechaNacimiento()],
+        updateOn: 'blur'
+      }),
       description: this.fb.control('', {
         validators: [Validators.required, Validators.minLength(5), Validators.maxLength(200)],
         updateOn: 'blur'
@@ -102,7 +108,16 @@ export class Registro {
     //si el formulario es invalido muestro modal y corto
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
-      mostrarSwal('Revisá el formulario', 'Hay campos con errores resaltados en rojo.', 'info');
+      const birthErrors = this.registerForm.get('birthDate')?.errors;
+      if (birthErrors?.['underAge']) {
+        mostrarSwal('Necesitás ser mayor de edad', MENSAJE_MENOR_EDAD, 'info');
+      } else if (birthErrors?.['futureDate']) {
+        mostrarSwal('Fecha inválida', MENSAJE_FECHA_FUTURA, 'info');
+      } else if (birthErrors?.['invalidDate']) {
+        mostrarSwal('Fecha inválida', 'Ingresá una fecha real.', 'info');
+      } else {
+        mostrarSwal('Revisá el formulario', 'Hay campos con errores resaltados en rojo.', 'info');
+      }
       return;
     }
 
@@ -147,6 +162,14 @@ export class Registro {
   protected onProfileImageChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
+    if (!esArchivoImagenValido(file)) {
+      this.registerForm.get('imagenPerfil')?.setValue(null);
+      (event.target as HTMLInputElement).value = '';
+      this.selectedImageName = 'Ningún archivo seleccionado';
+      mostrarSwal('Formato no soportado', MENSAJE_IMAGEN_INVALIDA, 'warning');
+      return;
+    }
+
     this.registerForm.get('imagenPerfil')?.setValue(file);
     this.selectedImageName = file ? file.name : 'Ningún archivo seleccionado';
   }

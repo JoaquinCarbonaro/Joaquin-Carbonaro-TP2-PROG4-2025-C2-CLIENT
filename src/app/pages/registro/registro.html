@@ -80,8 +80,23 @@
       <label class="field">
         <span class="field-label">Fecha de nacimiento</span>
         <input type="date" formControlName="birthDate" />
-        @if (registerForm.get('birthDate')?.invalid && registerForm.get('birthDate')?.touched) {
+        @if (registerForm.get('birthDate')?.hasError('required') && registerForm.get('birthDate')?.touched) {
           <span class="error">Seleccioná tu fecha.</span>
+        } @else if (
+          registerForm.get('birthDate')?.hasError('invalidDate') &&
+          registerForm.get('birthDate')?.touched
+        ) {
+          <span class="error">Ingresá una fecha válida.</span>
+        } @else if (
+          registerForm.get('birthDate')?.hasError('futureDate') &&
+          registerForm.get('birthDate')?.touched
+        ) {
+          <span class="error">La fecha no puede ser posterior a hoy.</span>
+        } @else if (
+          registerForm.get('birthDate')?.hasError('underAge') &&
+          registerForm.get('birthDate')?.touched
+        ) {
+          <span class="error">Debés tener 18 años o más.</span>
         }
       </label>
 
