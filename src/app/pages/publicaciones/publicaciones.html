@@ -1,1 +1,170 @@
-<p>publicaciones works!</p>
+<section class="publicaciones-page">
+  
+  <!--encabezado de la pagina-->
+  <header class="page-header">
+    <!--bloque de texto del encabezado-->
+    <div class="page-header-text">
+      <!--titulo principal de la pagina-->
+      <h1 class="title">Publicaciones de la comunidad</h1>
+      <!--subtitulo descriptivo de la seccion-->
+      <p class="subtitle">
+        Explorá las historias compartidas por los viajeros de Rumbo Criollo.
+      </p>
+    </div>
+  </header>
+
+  <!--bloque para agregar publicacion-->
+  <section class="crear-publicacion-bloque">
+    <!--checkbox oculto que controla la visibilidad del formulario-->
+    <input
+      id="toggle-crear-publicacion"
+      type="checkbox"
+      class="toggle-crear-checkbox"
+    />
+
+    <!--boton visual para mostrar/ocultar el formulario-->
+    <label for="toggle-crear-publicacion" class="toggle-crear-btn">
+      + Agregar publicación
+    </label>
+
+    <!--formulario para crear una nueva publicacion-->
+    <section class="crear-publicacion">
+      <!--titulo del formulario de nueva publicacion-->
+      <h2 class="form-title">Comparte tu experiencia</h2>
+      <!--formulario reactivo para crear publicacion-->
+      <form class="crear-formulario" [formGroup]="formulario" (ngSubmit)="enviarFormulario()">
+        <!--campo de titulo de la publicacion-->
+        <div class="campo">
+          <label for="titulo">Titulo</label>
+          <input
+            id="titulo"
+            type="text"
+            formControlName="titulo"
+            placeholder="Ingresa un titulo llamativo"
+          />
+          <!--muestro errores de validacion del campo titulo-->
+          @if (campoEsInvalido('titulo')) {
+            <span class="error">
+              @if (formulario.get('titulo')?.hasError('required')) {
+                Debes ingresar un titulo
+              }
+              @if (formulario.get('titulo')?.hasError('minlength')) {
+                El titulo debe tener al menos 3 caracteres
+              }
+            </span>
+          }
+        </div>
+
+        <!--campo de descripcion de la publicacion-->
+        <div class="campo">
+          <label for="descripcion">Descripcion</label>
+          <textarea
+            id="descripcion"
+            rows="4"
+            formControlName="descripcion"
+            placeholder="Contanos lo mas importante de tu viaje"
+          ></textarea>
+          <!--muestro errores de validacion del campo descripcion-->
+          @if (campoEsInvalido('descripcion')) {
+            <span class="error">
+              @if (formulario.get('descripcion')?.hasError('required')) {
+                La descripcion es obligatoria
+              }
+              @if (formulario.get('descripcion')?.hasError('minlength')) {
+                La descripcion debe tener al menos 10 caracteres
+              }
+            </span>
+          }
+        </div>
+
+        <!--campo para adjuntar una imagen opcional-->
+        <div class="campo">
+          <label for="imagen">Imagen (opcional)</label>
+          <input
+            id="imagen"
+            type="file"
+            formControlName="imagen"
+            (change)="onArchivoSeleccionado($event)"
+            accept="image/*"
+          />
+          <!--muestro el nombre del archivo seleccionado-->
+          @if (nombreImagen !== '') {
+            <p class="archivo-seleccionado">Archivo seleccionado: {{ nombreImagen }}</p>
+          }
+        </div>
+
+        <!--boton para enviar el formulario de nueva publicacion-->
+        <button type="submit" class="primary-btn" [disabled]="formulario.invalid || creando">
+          {{ creando ? 'Creando...' : 'Publicar' }}
+        </button>
+      </form>
+    </section>
+  </section>
+
+  <!--botones de orden debajo del boton agregar-->
+  <div class="page-header-controls">
+    <!--boton para ordenar por publicaciones mas recientes-->
+    <button
+      type="button"
+      class="order-btn"
+      [ngClass]="{ active: estaActivo('recientes') }"
+      (click)="cambiarOrden('recientes')"
+    >
+      Más recientes
+    </button>
+
+    <!--boton para ordenar por publicaciones con mas me gusta-->
+    <button
+      type="button"
+      class="order-btn"
+      [ngClass]="{ active: estaActivo('likes') }"
+      (click)="cambiarOrden('likes')"
+    >
+      Más me gusta
+    </button>
+  </div>
+
+  <!--mensaje de error cuando falla la carga de publicaciones-->
+  @if (mensajeError !== '') {
+    <div class="alerta">{{ mensajeError }}</div>
+  }
+
+  <!--estado vacio cuando no hay publicaciones y no se esta cargando-->
+  @if (publicaciones.length === 0 && !cargando && mensajeError === '') {
+    <div class="empty-state">
+      <h2>Todavía no hay publicaciones cargadas.</h2>
+      <p>
+        Cuando la comunidad comience a compartir, las vas a ver acá mismo.
+      </p>
+    </div>
+  }
+
+  <!--grilla de publicaciones renderizada con el componente tarjeta-->
+  <section class="grid">
+    <!--recorro la lista de publicaciones y pinto cada tarjeta-->
+    @for (publicacion of publicaciones; track publicacion._id) {
+      <app-publicacion-card
+        [publicacion]="publicacion"
+        [usuarioActualId]="usuarioActualId"
+        [baseUrl]="baseUrl"
+        (like)="onDarLike($event)"
+        (unlike)="onQuitarLike($event)"
+        (eliminar)="onEliminar($event)"
+      />
+    }
+  </section>
+
+  <!--mensaje de carga mientras se traen las publicaciones-->
+  @if (cargando) {
+    <div class="loader">Cargando publicaciones...</div>
+  }
+
+  <!--boton para cargar mas publicaciones cuando hay mas paginas-->
+  @if (hayMas && !cargando) {
+    <div class="paginacion">
+      <button type="button" class="secondary-btn" (click)="cargarMas()">
+        Cargar más
+      </button>
+    </div>
+  }
+</section>

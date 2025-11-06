@@ -1,0 +1,255 @@
+/*contenedor principal de la pagina de publicaciones*/
+.publicaciones-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 0 3rem;
+  color: #f1f8e9;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/*titulo principal*/
+.title {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #f9a825;
+}
+
+/*subtitulo*/
+.subtitle {
+  margin: 0.3rem auto 0;
+  color: #f1f8e9;
+  max-width: 520px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/*bloque para el formulario de nueva publicacion*/
+.crear-publicacion-bloque {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+/*checkbox oculto que controla el toggle del formulario*/
+.toggle-crear-checkbox {
+  display: none;
+}
+
+/*boton agregar publicacion centrado y estilo igual a cargar mas*/
+.toggle-crear-btn {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.75rem 2rem;
+  border: none;
+  background: #4fc3f7;
+  color: #1b5e20;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+}
+
+/*hover igual al boton cargar mas*/
+.toggle-crear-btn:hover {
+  transform: translateY(-2px);
+}
+
+/*estilo del boton cuando el toggle esta activo*/
+.toggle-crear-checkbox:checked + .toggle-crear-btn {
+  background: linear-gradient(135deg, #f9a825, #fb8c00);
+  color: #1b5e20;
+}
+
+/*formulario crear publicacion oculto por defecto*/
+.crear-publicacion {
+  display: none;
+  padding: 1.75rem 2rem;
+  border-radius: 20px;
+  background: radial-gradient(circle at top left, #1e5b34, #0f331c);
+  border: 1px solid rgba(79, 195, 247, 0.45);
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+  width: 100%;
+  max-width: 800px;
+}
+
+/*muestro el formulario cuando el toggle esta activado*/
+.toggle-crear-checkbox:checked + .toggle-crear-btn + .crear-publicacion {
+  display: flex;
+}
+
+/*titulo del formulario de nueva publicacion*/
+.form-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f1f8e9;
+  text-align: left;
+}
+
+/*contenedor del formulario de creacion*/
+.crear-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+}
+
+/*contenedor de cada campo del formulario*/
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/*estilo de las etiquetas de los campos*/
+.campo label {
+  font-weight: 600;
+  color: #f1f8e9;
+}
+
+/*estilo base de inputs, textarea y selector de archivo*/
+.campo input[type='text'],
+.campo textarea,
+.campo input[type='file'] {
+  border-radius: 12px;
+  border: 1px solid rgba(79, 195, 247, 0.75);
+  padding: 0.75rem 1rem;
+  background: rgba(241, 248, 233, 0.97);
+  color: #1b5e20;
+  font-size: 0.95rem;
+}
+
+/*configuro textarea para que solo cambie en alto*/
+.campo textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/*mensaje de error debajo de los campos*/
+.error {
+  font-size: 0.85rem;
+  color: #ff9b9b;
+}
+
+/*texto que muestra el archivo seleccionado*/
+.archivo-seleccionado {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #f1f8e9;
+}
+
+/*boton principal para enviar el formulario*/
+.primary-btn {
+  align-self: flex-start;
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 2.4rem;
+  background: linear-gradient(135deg, #f9a825, #fb8c00);
+  color: #1b5e20;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/*hover del boton principal cuando esta habilitado*/
+.primary-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+/*estilo del boton principal cuando esta deshabilitado*/
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/*contenedor de los botones de orden debajo del titulo*/
+.page-header-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/*botones de orden de publicaciones*/
+.order-btn {
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid rgba(79, 195, 247, 0.5);
+  background: rgba(9, 45, 24, 0.9);
+  color: #f1f8e9;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  font-weight: 600;
+}
+
+/*hover de los botones de orden*/
+.order-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(13, 70, 37, 0.95);
+}
+
+/*estilo del boton de orden activo*/
+.order-btn.active {
+  background: #f9a825;
+  border-color: #fb8c00;
+  color: #1b5e20;
+}
+
+/*estado vacio cuando no hay publicaciones*/
+.empty-state {
+  padding: 2.5rem;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px dashed rgba(148, 210, 189, 0.5);
+  text-align: center;
+  backdrop-filter: blur(6px);
+  color: #f1f8e9;
+}
+
+/*contenedor en columna para la lista de publicaciones*/
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/*mensaje de carga mientras traigo publicaciones*/
+.loader {
+  text-align: center;
+  font-weight: 600;
+  color: #f1f8e9;
+}
+
+/*contenedor de la seccion de paginacion*/
+.paginacion {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.8rem;
+}
+
+/*boton secundario por ejemplo para cargar mas*/
+.secondary-btn {
+  border-radius: 999px;
+  padding: 0.75rem 1.75rem;
+  border: none;
+  background: #4fc3f7;
+  color: #1b5e20;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  font-weight: 600;
+}
+
+/*hover del boton secundario*/
+.secondary-btn:hover {
+  transform: translateY(-2px);
+}
