@@ -3,18 +3,13 @@ export class Usuario {
   nombre!: string
   apellido!: string
   email!: string
-  //nombre de usuario visible y unico
-  userName!: string
+  userName!: string //nombre de usuario unico
   fechaNacimiento!: Date
-  //contraseña opcional (no siempre se expone)
-  password?: string
+  password?: string //contraseña opcional
   descripcion!: string
-  //url o ruta de la imagen de perfil
-  imagenPerfil!: string
-  //indica si el usuario esta habilitado o no
-  estado!: boolean
-  //rol del usuario (usuario comun o administrador)
-  perfil!: 'usuario' | 'administrador'
+  imagenPerfil!: string //url o ruta de la imagen de perfil
+  estado!: boolean //indica si el usuario esta habilitado o no
+  perfil!: 'usuario' | 'administrador' //rol del usuario (usuario comun o administrador)
 
   //constructor que permite inicializar con valores parciales
   constructor(init?: Partial<Usuario>) {
