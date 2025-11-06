@@ -1,0 +1,273 @@
+/*contenedor principal de la pagina de perfil*/
+.perfil-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 0 3rem;
+  color: #f1f8e9;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/*contenedor base de mensajes de estado y alerta*/
+.estado,
+.alerta {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/*mensaje de estado informativo*/
+.estado {
+  background: rgba(79, 195, 247, 0.18);
+  color: #f1f8e9;
+}
+
+/*mensaje de alerta de error*/
+.alerta {
+  background: rgba(255, 107, 107, 0.18);
+  color: #ffe6e6;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+}
+
+/*tarjeta principal del perfil del usuario*/
+.perfil-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top left, #1e5b34, #0f331c);
+  border-radius: 20px;
+  padding: 2rem 3rem;
+  border: 1px solid rgba(79, 195, 247, 0.45);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*imagen de avatar del perfil*/
+.perfil-avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4fc3f7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
+}
+
+/*placeholder del avatar cuando no hay imagen*/
+.perfil-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #f1f8e9;
+  background: rgba(79, 195, 247, 0.18);
+  border: 2px solid rgba(79, 195, 247, 0.45);
+}
+
+/*contenedor con los datos principales del perfil*/
+.perfil-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+  text-align: left;
+  max-width: 550px;
+}
+
+/*nombre completo del usuario*/
+.nombre {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f9a825;
+}
+
+/*nombre de usuario con arroba*/
+.usuario {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4fc3f7;
+}
+
+/*descripcion del perfil del usuario*/
+.descripcion {
+  margin: 0.4rem 0 0;
+  max-width: 540px;
+  color: rgba(241, 248, 233, 0.9);
+  line-height: 1.5;
+}
+
+/*grid contenedor de los datos del perfil*/
+.perfil-datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.3rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*tarjeta individual para cada dato del perfil*/
+.dato {
+  background: radial-gradient(circle at top left, #1e5b34, #0f331c);
+  border-radius: 20px;
+  padding: 1.3rem 1.6rem;
+  border: 1px solid rgba(79, 195, 247, 0.45);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/*titulo de cada dato del perfil*/
+.dato-titulo {
+  margin: 0 0 0.3rem 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f9a825;
+}
+
+/*valor principal del dato del perfil*/
+.dato-valor {
+  margin: 0;
+  font-size: 0.98rem;
+  color: rgba(241, 248, 233, 0.96);
+}
+
+/*estilo para cuando el valor del dato esta vacio*/
+.dato-valor-vacio {
+  opacity: 0.85;
+  font-style: italic;
+}
+
+/*contenedor de la seccion de publicaciones del perfil*/
+.perfil-publicaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  align-items: center;
+  width: 100%;
+}
+
+/*encabezado de la seccion de publicaciones*/
+.publicaciones-header {
+  text-align: center;
+}
+
+/*titulo principal de la seccion de publicaciones*/
+.publicaciones-titulo {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #f9a825;
+  font-weight: 700;
+}
+
+/*subtitulo explicativo de la seccion de publicaciones*/
+.publicaciones-subtitulo {
+  margin: 0.5rem auto 0;
+  color: rgba(241, 248, 233, 0.9);
+  max-width: 620px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/*mensaje mostrado cuando el perfil no tiene publicaciones*/
+.sin-publicaciones {
+  padding: 1.5rem;
+  border-radius: 16px;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px dashed rgba(148, 210, 189, 0.5);
+  color: #f1f8e9;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*lista de tarjetas de publicaciones del perfil*/
+.lista-publicaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*responsive principal para pantallas chicas*/
+@media (max-width: 768px) {
+  /*ajusto espaciado general de la pagina de perfil en mobile*/
+  .perfil-page {
+    padding: 1.5rem 0 2.5rem;
+    gap: 1.5rem;
+  }
+
+  /*muestro la tarjeta de perfil en columna y centrada*/
+  .perfil-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  /*centro y ensancho el detalle del perfil en mobile*/
+  .perfil-detalle {
+    align-items: center;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  /*reduzco el tamaño del avatar en mobile*/
+  .perfil-avatar,
+  .perfil-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+  }
+
+  /*ajusto el tamaño del nombre en pantallas chicas*/
+  .nombre {
+    font-size: 1.6rem;
+  }
+
+  /*ajusto el tamaño del titulo de publicaciones en mobile*/
+  .publicaciones-titulo {
+    font-size: 1.5rem;
+  }
+
+  /*agrego padding lateral para evitar que pegue contra los bordes*/
+  .perfil-datos,
+  .lista-publicaciones,
+  .sin-publicaciones {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/*responsive extra para pantallas muy chicas*/
+@media (max-width: 530px) {
+  /*uso una sola columna en los datos del perfil*/
+  .perfil-datos {
+    grid-template-columns: 1fr;
+  }
+
+  /*reduzco el padding de cada dato para que no se pase del ancho*/
+  .dato {
+    padding: 1rem 1.2rem;
+  }
+}
