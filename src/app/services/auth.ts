@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-
 import { environment } from '../../environments/environment';
 import { mostrarSwal, swalConOpciones } from '../utils/swal';
 
