@@ -1,1 +1,118 @@
-<p>publicacion-card works!</p>
+<!--card publicacion-->
+<article class="publicacion-card">
+
+  <!--encabezado con datos del autor y boton eliminar-->
+  <header class="card-header">
+
+    <!--bloque con info e imagen del autor-->
+    <div class="autor">
+
+      <!--muestro el avatar si el usuario tiene imagen-->
+      @if (obtenerAvatar() !== '') {
+        <img class="avatar" [src]="obtenerAvatar()" [alt]="publicacion.autor.userName" />
+      } 
+      <!--si no tiene imagen muestro las iniciales-->
+      @else {
+        <div class="avatar avatar-placeholder">{{ inicialesAutor() }}</div>
+      }
+
+      <!--contenedor con nombre de usuario y fecha-->
+      <div class="autor-detalle">
+        <!--nombre de usuario del autor-->
+        <p class="autor-nombre">@{{ publicacion.autor.userName }}</p>
+        <!--fecha de publicacion formateada-->
+        <span class="fecha">{{ publicacion.createdAt | date: "d 'de' MMMM 'de' y" }}</span>
+      </div>
+    </div>
+
+    <!--boton eliminar visible solo si la publicacion es del usuario logueado-->
+    @if (esPropia) {
+      <button type="button" class="delete-btn" (click)="onEliminar()">Eliminar</button>
+    }
+  </header>
+
+  <!--muestro la imagen principal si existe-->
+  @if (obtenerImagen() !== '') {
+    <img class="principal" [src]="obtenerImagen()" [alt]="publicacion.titulo" />
+  }
+
+  <!--cuerpo principal de la publicacion con titulo y mensaje-->
+  <section class="contenido">
+
+    <!--titulo del post-->
+    <h2 class="titulo">{{ publicacion.titulo }}</h2>
+
+    <!--texto o mensaje del post-->
+    <p class="mensaje">{{ publicacion.mensaje }}</p>
+  </section>
+
+  <!--pie de la tarjeta con boton me gusta-->
+  <footer class="card-footer">
+
+    <!--boton de like que cambia estilo segun el estado-->
+    <button
+      type="button"
+      class="like-btn"
+      [ngClass]="{ liked: tieneLike }"
+      (click)="onToggleLike()"
+    >
+
+      <!--icono que cambia segun si el usuario dio like o no-->
+      <span class="icon" aria-hidden="true">
+        @if (tieneLike) {
+          💚
+        } 
+        @else {
+          🤍
+        }
+      </span>
+
+      <!--cantidad total de likes-->
+      {{ publicacion.likes.length }} me gusta
+    </button>
+  </footer>
+
+  <!--seccion visual de comentarios-->
+  <section class="comentarios">
+
+    <!--encabezado de la seccion comentarios-->
+    <header class="comentarios-header">
+      <!--titulo de la seccion comentarios-->
+      <h3 class="comentarios-titulo">Comentarios</h3>
+      <!--contador con el total de comentarios-->
+      <span class="comentarios-total">{{ listaComentarios.length }}</span>
+    </header>
+
+    <!--listado de comentarios existentes-->
+    @if (hayComentarios) {
+      <ul class="comentarios-lista">
+
+        <!--recorro la lista de comentarios existentes-->
+        @for (comentario of listaComentarios; track comentario._id) {
+          <li class="comentario-item">
+
+            <!--cabecera de cada comentario con usuario y fecha-->
+            <div class="comentario-header">
+              <strong>@{{ comentario.usuario.userName }}</strong>
+              <span class="comentario-fecha">{{ comentario.createdAt | date: 'd/MM HH:mm' }}</span>
+            </div>
+
+            <!--contenido principal del comentario-->
+            <p class="comentario-texto">{{ comentario.contenido }}</p>
+          </li>
+        }
+      </ul>
+    }
+
+    <!--mensaje mostrado cuando no hay comentarios-->
+    @else {
+      <p class="sin-comentarios">Todavia no hay comentarios para esta publicacion.</p>
+    }
+
+    <!--placeholder informativo hasta implementar el formulario-->
+    <div class="comentarios-pendiente">
+      <p>Muy pronto vas a poder sumar tu comentario desde esta seccion.</p>
+    </div>
+  </section>
+
+</article>
