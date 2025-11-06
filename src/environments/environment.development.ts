@@ -21,7 +21,7 @@ export const environment = {
     },
     //credenciales de usuario normal
     user: {
-      identifier: 'test@rumbo.com',
+      identifier: 'user@rumbo.com',
       password: 'RumboTest123'
     }
   }
