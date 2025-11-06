@@ -56,18 +56,9 @@ export class PerfilService {
 
   //transformo los datos del backend al modelo perfil usado en el front
   private mapearPerfil(data: any): Perfil {
-    let fechaNacimiento: Date | string | null = null
-
-    //si viene fecha de nacimiento intento convertirla a date
-    if (data?.fechaNacimiento) {
-      //si viene como string iso lo intento convertir a date
-      try {
-        fechaNacimiento = new Date(data.fechaNacimiento)
-      } catch {
-        //si falla la conversion me quedo con el valor original
-        fechaNacimiento = data.fechaNacimiento
-      }
-    }
+    
+    //si viene fecha de nacimiento la dejo como string plano
+    const fechaNacimiento: string | null = data?.fechaNacimiento ?? null
 
     //creo una instancia de perfil usando valores con fallback
     return new Perfil({
