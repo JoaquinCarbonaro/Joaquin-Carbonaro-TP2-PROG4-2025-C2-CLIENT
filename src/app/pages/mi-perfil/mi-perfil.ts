@@ -27,9 +27,9 @@ export class MiPerfil implements OnInit {
 
   //almaceno la informacion del perfil del usuario
   protected perfil: Perfil | null = null
-  //almaceno la lista completa de publicaciones del usuario
+  //almaceno la lista completa de publicaciones del usuario cargadas hasta el momento
   protected publicaciones: Publicacion[] = []
-  //almaceno una lista reducida con las tres ultimas publicaciones
+  //almaceno las publicaciones visibles (inicia con las tres ultimas y se expande)
   protected ultimas: Publicacion[] = []
   //marco si estoy cargando los datos de perfil o publicaciones
   protected cargando = true
@@ -39,6 +39,16 @@ export class MiPerfil implements OnInit {
   protected readonly baseUrl = environment.apiBaseUrl
   //obtengo el uuid del usuario actual para habilitar acciones sobre sus publicaciones
   protected readonly usuarioActualId = this.authService.obtenerIdUsuario()
+  //cantidad total de publicaciones del usuario en el backend
+  protected totalPublicaciones = 0
+  //offset actual usado para la paginacion progresiva
+  protected offsetActual = 0
+  //cantidad de publicaciones que traigo en cada peticion
+  protected readonly limitePorCarga = 3
+  //indica si todavia quedan publicaciones para cargar
+  protected hayMas = false
+  //estado de carga especifico para el listado de publicaciones
+  protected cargandoPublicaciones = false
   //se implementara en el sprint 3 habilito la edicion del perfil desde esta vista
 
   //inicio la carga del perfil cuando se inicia el componente
@@ -118,12 +128,18 @@ export class MiPerfil implements OnInit {
       //si la eliminacion fue exitosa actualizo las listas locales
       next: () => {
         this.publicaciones = this.publicaciones.filter((item) => item._id !== publicacion._id)
+        this.totalPublicaciones = this.totalPublicaciones > 0 ? this.totalPublicaciones - 1 : 0
+        this.offsetActual = this.publicaciones.length
+        this.hayMas = this.offsetActual < this.totalPublicaciones
         this.actualizarUltimas()
         mostrarSwal(
           'publicacion eliminada',
           'tu publicacion ya no aparece en el listado',
           'success'
         )
+        if (this.hayMas && !this.cargandoPublicaciones) {
+          this.cargarPublicacionesUsuario()
+        }
       },
       //si falla aviso al usuario con un mensaje de error
       error: () => {
@@ -148,7 +164,7 @@ export class MiPerfil implements OnInit {
         //guardo la informacion del usuario
         this.perfil = respuesta.usuario
         //una vez que tengo el perfil cargo las publicaciones del usuario
-        this.cargarPublicacionesUsuario()
+        this.cargarPublicacionesUsuario(true)
       },
       //manejo el error si la peticion de perfil falla
       error: () => {
@@ -161,39 +177,94 @@ export class MiPerfil implements OnInit {
   }
 
   //obtengo las publicaciones usando el filtro por usuario del backend
-  private cargarPublicacionesUsuario(): void {
+  private cargarPublicacionesUsuario(reset: boolean = false): void {
     const usuarioId = this.usuarioActualId
 
     //si no tengo usuario actual limpio las listas y corto el flujo
     if (usuarioId === '') {
       this.publicaciones = []
       this.ultimas = []
+      this.totalPublicaciones = 0
+      this.offsetActual = 0
+      this.hayMas = false
       this.cargando = false
+      this.cargandoPublicaciones = false
       return
     }
 
+    //si ya estoy cargando publicaciones evito peticiones duplicadas
+    if (this.cargandoPublicaciones) {
+      return
+    }
+
+    //si no quedan publicaciones para cargar y no es un reset salgo
+    if (!this.hayMas && !reset && this.publicaciones.length > 0) {
+      return
+    }
+
+    //si piden reiniciar la lista vuelvo a los valores iniciales
+    if (reset) {
+      this.publicaciones = []
+      this.ultimas = []
+      this.totalPublicaciones = 0
+      this.offsetActual = 0
+      this.hayMas = true
+      this.mensajeError = ''
+      this.cargando = true
+    }
+
+    this.cargandoPublicaciones = true
+
+    //calculo el offset segun la cantidad ya cargada
+    const offset = reset ? 0 : this.offsetActual
+
     //solicito las publicaciones del usuario al servicio de publicaciones
     this.publicacionesService
-      .listarPublicaciones(0, 30, 'recientes', usuarioId)
+      .listarPublicaciones(offset, this.limitePorCarga, 'recientes', usuarioId)
       .subscribe({
-        //si la consulta es exitosa ordeno y actualizo la vista
+        //si la consulta es exitosa actualizo las listas locales
         next: (respuesta) => {
-          const ordenadas = [...respuesta.publicaciones].sort((a, b) => {
-            const fechaA = new Date(a.createdAt).getTime()
-            const fechaB = new Date(b.createdAt).getTime()
-            return fechaB - fechaA
-          })
-          this.publicaciones = ordenadas
+          const nuevas = respuesta.publicaciones ?? []
+          this.publicaciones = reset ? nuevas : [...this.publicaciones, ...nuevas]
+          const totalRemoto =
+            typeof respuesta.total === 'number'
+              ? respuesta.total
+              : this.publicaciones.length
+          this.totalPublicaciones = totalRemoto
+          this.offsetActual = this.publicaciones.length
+          this.hayMas = this.offsetActual < this.totalPublicaciones
           this.actualizarUltimas()
-          this.cargando = false
+          this.cargandoPublicaciones = false
+          if (reset) {
+            this.cargando = false
+          }
         },
-        //si falla la consulta muestro mensaje de error
+        //si falla la consulta muestro mensaje de error segun el contexto
         error: () => {
-          this.cargando = false
-          this.mensajeError = 'no pudimos cargar tus publicaciones en este momento'
-          mostrarSwal('sin conexion', this.mensajeError, 'error')
+          this.cargandoPublicaciones = false
+          if (reset) {
+            this.cargando = false
+            this.mensajeError = 'no pudimos cargar tus publicaciones en este momento'
+            mostrarSwal('sin conexion', this.mensajeError, 'error')
+          } else {
+            mostrarSwal(
+              'sin conexion',
+              'no pudimos cargar mas publicaciones en este momento',
+              'error'
+            )
+          }
         }
       })
+  }
+
+  //cargo mas publicaciones del usuario cuando se presiona el boton cargar mas
+  protected cargarMasPublicaciones(): void {
+    //si ya estoy cargando o no quedan publicaciones salgo
+    if (this.cargandoPublicaciones || !this.hayMas) {
+      return
+    }
+
+    this.cargarPublicacionesUsuario()
   }
 
   //reemplazo una publicacion por su version actualizada en las listas locales
@@ -217,7 +288,7 @@ export class MiPerfil implements OnInit {
       const fechaB = new Date(b.createdAt).getTime()
       return fechaB - fechaA
     })
-    //me quedo solo con las primeras tres para la seccion de mi perfil
-    this.ultimas = ordenadas.slice(0, 3)
+    //actualizo la lista visible con todas las publicaciones cargadas hasta el momento
+    this.ultimas = ordenadas
   }
 }

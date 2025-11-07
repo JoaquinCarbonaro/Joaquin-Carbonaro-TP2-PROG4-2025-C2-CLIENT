@@ -210,6 +210,37 @@
   box-sizing: border-box;
 }
 
+/*contenedor del boton cargar mas para mantenerlo centrado*/
+.acciones-cargar-mas {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/*boton que permite cargar mas publicaciones del usuario*/
+.cargar-mas-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.9rem;
+  background: #4fc3f7;
+  color: #1b5e20;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/*estilo del boton cuando esta deshabilitado*/
+.cargar-mas-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/*efecto hover cuando el boton esta habilitado*/
+.cargar-mas-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
 /*responsive principal para pantallas chicas*/
 @media (max-width: 768px) {
   /*ajusto espaciado general de la pagina de perfil en mobile*/

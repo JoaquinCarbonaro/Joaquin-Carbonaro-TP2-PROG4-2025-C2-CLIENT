@@ -70,7 +70,7 @@
         <h2 class="publicaciones-titulo">Tus últimas publicaciones</h2>
         <!--texto explicativo de cuantas publicaciones se muestran-->
         <p class="publicaciones-subtitulo">
-          Se muestran tus tres publicaciones más recientes.
+          Se cargan tres publicaciones por vez. Usa el botón para ver más cuando estén disponibles.
         </p>
       </header>
 
@@ -97,6 +97,20 @@
             />
           }
         </div>
+
+        <!--boton para cargar mas publicaciones del perfil-->
+        @if (hayMas) {
+          <div class="acciones-cargar-mas">
+            <button
+              type="button"
+              class="cargar-mas-btn"
+              (click)="cargarMasPublicaciones()"
+              [disabled]="cargandoPublicaciones"
+            >
+              {{ cargandoPublicaciones ? 'Cargando...' : 'Cargar más' }}
+            </button>
+          </div>
+        }
       }
     </section>
   }
