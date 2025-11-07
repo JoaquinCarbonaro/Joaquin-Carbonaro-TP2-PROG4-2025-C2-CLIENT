@@ -8,9 +8,25 @@
     <div class="autor">
 
       <!--muestro el avatar si el usuario tiene imagen-->
-      @if (obtenerAvatar() !== '') {
-        <img class="avatar" [src]="obtenerAvatar()" [alt]="publicacion.autor.userName" />
-      } 
+      @if (avatarUrl !== '') {
+        <div class="avatar-contenedor">
+          @if (!avatarCargado) {
+            <div class="avatar-skeleton" aria-hidden="true"></div>
+          }
+          <img
+            class="avatar avatar-imagen"
+            [class.imagen-visible]="avatarCargado"
+            [src]="avatarUrl"
+            [alt]="publicacion.autor.userName"
+            width="56"
+            height="56"
+            loading="lazy"
+            decoding="async"
+            (load)="onAvatarCargado()"
+            (error)="onAvatarError()"
+          />
+        </div>
+      }
       <!--si no tiene imagen muestro las iniciales-->
       @else {
         <div class="avatar avatar-placeholder">{{ inicialesAutor() }}</div>
@@ -32,8 +48,22 @@
   </header>
 
   <!--muestro la imagen principal si existe-->
-  @if (obtenerImagen() !== '') {
-    <img class="principal" [src]="obtenerImagen()" [alt]="publicacion.titulo" />
+  @if (imagenUrl !== '') {
+    <div class="principal-contenedor">
+      @if (!imagenCargada) {
+        <div class="principal-skeleton" aria-hidden="true"></div>
+      }
+      <img
+        class="principal principal-imagen"
+        [class.imagen-visible]="imagenCargada"
+        [src]="imagenUrl"
+        [alt]="publicacion.titulo"
+        loading="lazy"
+        decoding="async"
+        (load)="onImagenCargada()"
+        (error)="onImagenError()"
+      />
+    </div>
   }
 
   <!--cuerpo principal de la publicacion con titulo y mensaje-->

@@ -11,6 +11,7 @@
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
   color: #f1f8e9;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  min-height: 24rem;
 }
 
 /*efecto hover general*/
@@ -35,6 +36,13 @@
   gap: 1rem;
 }
 
+/*contenedor del avatar para permitir el esqueleto mientras carga*/
+.avatar-contenedor {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
 /*imagen de perfil del autor*/
 .avatar {
   width: 56px;
@@ -42,6 +50,23 @@
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #4fc3f7;
+}
+
+/*avatar imagen con animacion de aparicion*/
+.avatar-imagen {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  display: block;
+}
+
+/*skeleton del avatar mientras la imagen carga*/
+.avatar-skeleton {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(90deg, rgba(79, 195, 247, 0.25), rgba(79, 195, 247, 0.55), rgba(79, 195, 247, 0.25));
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
 }
 
 /*avatar alternativo cuando el usuario no tiene imagen*/
@@ -97,12 +122,42 @@
 }
 
 /*imagen principal de la publicacion*/
+/*contenedor de la imagen principal para manejar el esqueleto*/
+.principal-contenedor {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(9, 45, 24, 0.95);
+}
+
+/*skeleton mostrado mientras la imagen principal carga*/
+.principal-skeleton {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(79, 195, 247, 0.2), rgba(79, 195, 247, 0.4), rgba(79, 195, 247, 0.2));
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.3s ease-in-out infinite;
+  border: 1px solid rgba(79, 195, 247, 0.35);
+}
+
+/*imagen principal de la publicacion*/
 .principal {
   width: 100%;
   border-radius: 14px;
   object-fit: cover;
   max-height: 360px;
+  aspect-ratio: 4 / 3;
   border: 1px solid rgba(79, 195, 247, 0.35);
+}
+
+
+/*la imagen principal aparece suavemente*/
+.principal-imagen {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  display: block;
 }
 
 /*contenedor del texto principal de la publicacion*/
@@ -166,6 +221,21 @@
 /*icono dentro del boton*/
 .icon {
   font-size: 1.15rem;
+}
+
+/*clase auxiliar para marcar las imagenes ya cargadas*/
+.imagen-visible {
+  opacity: 1;
+}
+
+/*animacion del efecto esqueleto*/
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
 }
 
 /*seccion de comentarios asociada a la publicacion*/
