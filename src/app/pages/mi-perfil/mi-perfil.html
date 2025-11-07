@@ -20,8 +20,11 @@
           class="perfil-avatar"
           [src]="resolverImagen(perfil.imagenPerfil)"
           [alt]="perfil.userName"
+          loading="lazy"
+          decoding="async"
+          (error)="onAvatarPerfilError($event)"
         />
-      } 
+      }
       <!--si no hay imagen muestro las iniciales del usuario-->
       @else {
         <div class="perfil-avatar perfil-avatar-placeholder">{{ inicialesPerfil() }}</div>

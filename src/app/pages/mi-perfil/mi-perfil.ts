@@ -18,82 +18,108 @@ import { Auth } from '../../services/auth'
 })
 export class MiPerfil implements OnInit {
 
-  //inyecto el servicio de perfil para obtener los datos del usuario
+  //inyecto el servicio de perfil para obtener datos del usuario
   private readonly perfilService = inject(PerfilService)
-  //inyecto el servicio de publicaciones para reutilizar acciones
+  //inyecto el servicio de publicaciones para operar sobre publicaciones del usuario
   private readonly publicacionesService = inject(PublicacionesService)
-  //inyecto el servicio de autenticacion para conocer el uuid del usuario
+  //inyecto el servicio de autenticacion para conocer el usuario actual
   private readonly authService = inject(Auth)
 
-  //almaceno la informacion del perfil del usuario
+  //perfil del usuario actualmente autenticado
   protected perfil: Perfil | null = null
-  //almaceno la lista completa de publicaciones del usuario cargadas hasta el momento
+  //todas las publicaciones cargadas en memoria del usuario
   protected publicaciones: Publicacion[] = []
-  //almaceno las publicaciones visibles (inicia con las tres ultimas y se expande)
+  //sublista de publicaciones visibles segun la paginacion local
   protected ultimas: Publicacion[] = []
-  //marco si estoy cargando los datos de perfil o publicaciones
+  //indica si se esta cargando el perfil o las publicaciones iniciales
   protected cargando = true
-  //guardo un mensaje de error para mostrar en la vista
+  //mensaje de error a mostrar en la vista cuando falla alguna carga
   protected mensajeError = ''
-  //guardo la url base del backend obtenida del archivo de entorno
+  //url base del backend para armar rutas absolutas de recursos
   protected readonly baseUrl = environment.apiBaseUrl
-  //obtengo el uuid del usuario actual para habilitar acciones sobre sus publicaciones
+  //ruta al placeholder de imagen de perfil calculada en base a la url del backend
+  protected readonly placeholderPerfil = this.calcularPlaceholder()
+  //uuid del usuario actual obtenido desde el servicio de autenticacion
   protected readonly usuarioActualId = this.authService.obtenerIdUsuario()
-  //cantidad total de publicaciones del usuario en el backend
+  //cantidad total de publicaciones del usuario segun el backend
   protected totalPublicaciones = 0
-  //offset actual usado para la paginacion progresiva
+  //cantidad de publicaciones ya solicitadas al backend
   protected offsetActual = 0
-  //cantidad de publicaciones que traigo en cada peticion
+  //limite de publicaciones a pedir por cada carga al backend
   protected readonly limitePorCarga = 3
-  //indica si todavia quedan publicaciones para cargar
+  //indica si todavia hay publicaciones pendientes de mostrar
   protected hayMas = false
-  //estado de carga especifico para el listado de publicaciones
+  //indica si se esta realizando una llamada activa para cargar publicaciones
   protected cargandoPublicaciones = false
-  //se implementara en el sprint 3 habilito la edicion del perfil desde esta vista
 
-  //inicio la carga del perfil cuando se inicia el componente
+  //cantidad de publicaciones que se muestran actualmente en la vista
+  private cantidadVisible = this.limitePorCarga
+  //buffer para almacenar publicaciones precargadas antes de que el usuario las solicite
+  private bufferPublicaciones: Publicacion[] = []
+  //indica si ya se esta precargando una pagina adicional
+  private precargando = false
+
+  //al inicializar el componente solicito el perfil y sus publicaciones
   ngOnInit(): void {
     this.cargarPerfil()
   }
 
-  //construyo la ruta completa de una imagen recibida
+  //resuelve la url absoluta de una imagen de perfil o publicacion
   protected resolverImagen(imagen: string): string {
-    //si no hay imagen devuelvo cadena vacia
+    //si no viene imagen devuelvo cadena vacia
     if (!imagen) {
       return ''
     }
-    //si la imagen ya tiene una ruta completa http la retorno
+    //si es una url absoluta la reutilizo sin cambios
     if (imagen.startsWith('http')) {
       return imagen
     }
-    //elimino barra final de la url base si existe
+    //normalizo la base eliminando barra final si existe
     const base = this.baseUrl.replace(/\/$/, '')
-    //armo la ruta relativa dentro del directorio images
+    //armo la ruta relativa respetando si ya comienza con barra
     const ruta = imagen.startsWith('/') ? imagen : `/images/${imagen}`
-    //retorno la ruta combinada entre base y ruta relativa
+    //devuelvo la ruta absoluta combinando base y ruta relativa
     return `${base}${ruta}`
   }
 
-  //devuelvo las iniciales del perfil para usar en el avatar si no hay imagen
+  //maneja el error al cargar la imagen de avatar del perfil
+  protected onAvatarPerfilError(evento: Event): void {
+    const elemento = evento.target as HTMLImageElement | null
+
+    //si no se puede obtener el elemento no hago nada
+    if (!elemento) {
+      return
+    }
+
+    //si ya esta usando el placeholder evito entrar en un bucle
+    if (elemento.src.includes('placeholder.png')) {
+      return
+    }
+
+    //reemplazo la imagen fallida por el placeholder de perfil
+    elemento.src = this.placeholderPerfil
+  }
+
+  //devuelve las iniciales a mostrar cuando no hay imagen de perfil
   protected inicialesPerfil(): string {
     const nombre = this.perfil?.userName ?? ''
-    //si no hay nombre devuelvo las iniciales del proyecto
+    //si no hay nombre muestro iniciales del proyecto
     if (nombre === '') {
       return 'RC'
     }
-    //tomo la primera letra del nombre y la convierto en mayuscula
+    //obtengo la primera letra del nombre sin espacios y la paso a mayuscula
     const primeraLetra = nombre.trim().charAt(0)
     return primeraLetra.toUpperCase()
   }
 
-  //manejo el evento cuando el usuario da me gusta a una publicacion
+  //maneja el evento de dar like sobre una publicacion del perfil
   protected onDarLike(publicacion: Publicacion): void {
     this.publicacionesService.darLike(publicacion._id).subscribe({
-      //si la accion fue exitosa reemplazo la publicacion en memoria
+      //si el backend devuelve la publicacion actualizada la reemplazo en la lista
       next: (actualizada) => {
         this.reemplazarPublicacion(actualizada)
       },
-      //si falla aviso al usuario con un modal
+      //si ocurre un error muestro un mensaje al usuario
       error: () => {
         mostrarSwal(
           'no se pudo registrar el me gusta',
@@ -104,14 +130,14 @@ export class MiPerfil implements OnInit {
     })
   }
 
-  //manejo el evento cuando el usuario quita su me gusta
+  //maneja el evento de quitar like sobre una publicacion del perfil
   protected onQuitarLike(publicacion: Publicacion): void {
     this.publicacionesService.quitarLike(publicacion._id).subscribe({
-      //si la accion fue exitosa reemplazo la publicacion en memoria
+      //si el backend devuelve la publicacion actualizada la reemplazo en la lista
       next: (actualizada) => {
         this.reemplazarPublicacion(actualizada)
       },
-      //si falla aviso al usuario con un modal
+      //si ocurre un error muestro un mensaje al usuario
       error: () => {
         mostrarSwal(
           'no se pudo quitar el me gusta',
@@ -122,27 +148,37 @@ export class MiPerfil implements OnInit {
     })
   }
 
-  //manejo el evento cuando el usuario elimina una de sus publicaciones
+  //maneja la eliminacion de una publicacion del perfil
   protected onEliminar(publicacion: Publicacion): void {
     this.publicacionesService.eliminarPublicacion(publicacion._id).subscribe({
-      //si la eliminacion fue exitosa actualizo las listas locales
       next: () => {
+        //remuevo la publicacion eliminada de la lista local
         this.publicaciones = this.publicaciones.filter((item) => item._id !== publicacion._id)
+        //actualizo el total local de publicaciones evitando numeros negativos
         this.totalPublicaciones = this.totalPublicaciones > 0 ? this.totalPublicaciones - 1 : 0
+        //actualizo el offset para que coincida con la cantidad actual en memoria
         this.offsetActual = this.publicaciones.length
-        this.hayMas = this.offsetActual < this.totalPublicaciones
+        //ajusto la cantidad visible para no exceder el tamaño de la lista
+        this.cantidadVisible = Math.min(this.cantidadVisible, this.publicaciones.length)
+        //limpio el buffer de publicaciones precargadas ya que la lista cambio
+        this.bufferPublicaciones = []
+        //refresco la lista de publicaciones visibles
         this.actualizarUltimas()
+        //informo al usuario que la publicacion fue eliminada
         mostrarSwal(
           'publicacion eliminada',
           'tu publicacion ya no aparece en el listado',
           'success'
         )
-        if (this.hayMas && !this.cargandoPublicaciones) {
-          this.cargarPublicacionesUsuario()
+        //verifico si aun faltan publicaciones por traer desde el servidor
+        const faltaEnServidor = this.offsetActual < this.totalPublicaciones
+        //si faltan publicaciones y no estoy cargando pido una pagina mas
+        if (faltaEnServidor && !this.cargandoPublicaciones) {
+          this.cargarPublicacionesUsuario(false, false)
         }
       },
-      //si falla aviso al usuario con un mensaje de error
       error: () => {
+        //si falla la eliminacion informo el problema al usuario
         mostrarSwal(
           'no pudimos eliminarla',
           'revisa tu conexion e intenta otra vez',
@@ -152,35 +188,33 @@ export class MiPerfil implements OnInit {
     })
   }
 
-  //obtengo los datos del perfil desde el servicio de perfil
+  //carga los datos del perfil del usuario y luego sus publicaciones
   private cargarPerfil(): void {
-    //activo el estado de carga y limpio mensajes anteriores
+    //marco que estoy cargando y limpio errores previos
     this.cargando = true
     this.mensajeError = ''
-    //solicito los datos al servicio de perfil
+
     this.perfilService.obtenerPerfil().subscribe({
-      //manejo la respuesta exitosa del perfil
+      //si la llamada es exitosa guardo el perfil y cargo las publicaciones
       next: (respuesta) => {
-        //guardo la informacion del usuario
         this.perfil = respuesta.usuario
-        //una vez que tengo el perfil cargo las publicaciones del usuario
-        this.cargarPublicacionesUsuario(true)
+        this.cargarPublicacionesUsuario(true, false)
       },
-      //manejo el error si la peticion de perfil falla
+      //si falla la llamada muestro mensaje de error y detengo el estado de carga
       error: () => {
         this.cargando = false
         this.mensajeError = 'no pudimos cargar tu perfil en este momento'
-        //muestro una alerta modal con sweetalert
         mostrarSwal('sin conexion', this.mensajeError, 'error')
       }
     })
   }
 
-  //obtengo las publicaciones usando el filtro por usuario del backend
-  private cargarPublicacionesUsuario(reset: boolean = false): void {
+  //reset -> reinicia listas, expandVisible -> aumenta cantidadVisible en +3
+  //carga publicaciones del usuario aplicando offset y limite para paginacion
+  private cargarPublicacionesUsuario(reset: boolean = false, expandVisible: boolean = false): void {
     const usuarioId = this.usuarioActualId
 
-    //si no tengo usuario actual limpio las listas y corto el flujo
+    //si no hay usuario autenticado limpio datos y salgo
     if (usuarioId === '') {
       this.publicaciones = []
       this.ultimas = []
@@ -189,20 +223,23 @@ export class MiPerfil implements OnInit {
       this.hayMas = false
       this.cargando = false
       this.cargandoPublicaciones = false
+      this.cantidadVisible = this.limitePorCarga
+      this.bufferPublicaciones = []
+      this.precargando = false
       return
     }
 
-    //si ya estoy cargando publicaciones evito peticiones duplicadas
+    //si ya hay una carga de publicaciones en curso no disparo otra
     if (this.cargandoPublicaciones) {
       return
     }
 
-    //si no quedan publicaciones para cargar y no es un reset salgo
-    if (!this.hayMas && !reset && this.publicaciones.length > 0) {
+    //si no es un reset y ya traje todas las publicaciones no vuelvo a pedir
+    if (!reset && this.totalPublicaciones > 0 && this.offsetActual >= this.totalPublicaciones) {
       return
     }
 
-    //si piden reiniciar la lista vuelvo a los valores iniciales
+    //si es un reset reinicio todo el estado relacionado a publicaciones
     if (reset) {
       this.publicaciones = []
       this.ultimas = []
@@ -211,41 +248,81 @@ export class MiPerfil implements OnInit {
       this.hayMas = true
       this.mensajeError = ''
       this.cargando = true
+      this.cantidadVisible = this.limitePorCarga
+      this.bufferPublicaciones = []
+      this.precargando = false
     }
 
+    //marco que se esta realizando una carga de publicaciones
     this.cargandoPublicaciones = true
 
-    //calculo el offset segun la cantidad ya cargada
+    //defino el offset a usar segun sea un reset o una carga incremental
     const offset = reset ? 0 : this.offsetActual
 
-    //solicito las publicaciones del usuario al servicio de publicaciones
     this.publicacionesService
       .listarPublicaciones(offset, this.limitePorCarga, 'recientes', usuarioId)
       .subscribe({
-        //si la consulta es exitosa actualizo las listas locales
         next: (respuesta) => {
+          //obtengo las nuevas publicaciones o una lista vacia por defecto
           const nuevas = respuesta.publicaciones ?? []
+          //si es reset reemplazo la lista, si no agrego al final
           this.publicaciones = reset ? nuevas : [...this.publicaciones, ...nuevas]
+
+          //determino el total remoto si viene del backend, si no uso el largo local
           const totalRemoto =
             typeof respuesta.total === 'number'
               ? respuesta.total
               : this.publicaciones.length
+
           this.totalPublicaciones = totalRemoto
+          //el offset pasa a ser la cantidad total de publicaciones en memoria
           this.offsetActual = this.publicaciones.length
-          this.hayMas = this.offsetActual < this.totalPublicaciones
+
+          //total de referencia usado para decidir visibilidad y si hay mas
+          const totalReferencia =
+            this.totalPublicaciones > 0 ? this.totalPublicaciones : this.publicaciones.length
+
+          //si es reset fijo la cantidad visible inicial
+          if (reset) {
+            this.cantidadVisible = Math.min(this.limitePorCarga, this.publicaciones.length)
+          //si se pidio expandir visibles aumento el tope respetando total y largo local
+          } else if (expandVisible) {
+            const maxVisibles = Math.min(this.publicaciones.length, totalReferencia)
+            const nuevoLimite = Math.min(
+              this.cantidadVisible + this.limitePorCarga,
+              maxVisibles
+            )
+            this.cantidadVisible = nuevoLimite
+          //si no se expanden visibles solo ajusto el valor para no superar el largo
+          } else {
+            this.cantidadVisible = Math.min(this.cantidadVisible, this.publicaciones.length)
+          }
+
+          //actualizo la lista de publicaciones que realmente se muestran
           this.actualizarUltimas()
+          //marco fin de la carga de publicaciones
           this.cargandoPublicaciones = false
+
+          //si venia de un reset tambien termino el estado de carga general
           if (reset) {
             this.cargando = false
           }
+
+          //si aun faltan publicaciones en el servidor inicio precarga de la siguiente pagina
+          const faltaEnServidor = this.offsetActual < totalReferencia
+          if (faltaEnServidor) {
+            this.precargarSiguientePagina()
+          }
         },
-        //si falla la consulta muestro mensaje de error segun el contexto
         error: () => {
+          //si falla la carga de publicaciones marco que no se esta cargando
           this.cargandoPublicaciones = false
+          //si era un reset muestro error general y detengo el estado de carga
           if (reset) {
             this.cargando = false
             this.mensajeError = 'no pudimos cargar tus publicaciones en este momento'
             mostrarSwal('sin conexion', this.mensajeError, 'error')
+          //si era una carga incremental solo informo que no se pudieron traer mas
           } else {
             mostrarSwal(
               'sin conexion',
@@ -257,38 +334,169 @@ export class MiPerfil implements OnInit {
       })
   }
 
-  //cargo mas publicaciones del usuario cuando se presiona el boton cargar mas
+  //maneja el flujo al presionar el boton de cargar mas publicaciones
   protected cargarMasPublicaciones(): void {
-    //si ya estoy cargando o no quedan publicaciones salgo
-    if (this.cargandoPublicaciones || !this.hayMas) {
+    //si ya hay una carga en curso no hago nada
+    if (this.cargandoPublicaciones) {
       return
     }
 
-    this.cargarPublicacionesUsuario()
+    //obtengo el total de publicaciones locales y el total de referencia
+    const totalLocales = this.publicaciones.length
+    const totalReferencia =
+      this.totalPublicaciones > 0 ? this.totalPublicaciones : totalLocales
+
+    //si aun hay publicaciones locales ocultas aumento la cantidad visible
+    if (this.cantidadVisible < totalLocales) {
+      const nuevoLimite = Math.min(
+        this.cantidadVisible + this.limitePorCarga,
+        totalLocales,
+        totalReferencia
+      )
+      this.cantidadVisible = nuevoLimite
+      this.actualizarUltimas()
+
+      //si faltan publicaciones en el servidor intento precargar la siguiente pagina
+      const faltaEnServidor = this.offsetActual < totalReferencia
+      if (faltaEnServidor && !this.precargando && this.bufferPublicaciones.length === 0) {
+        this.precargarSiguientePagina()
+      }
+      return
+    }
+
+    //si no hay mas locales ocultas pero el buffer tiene publicaciones las agrego
+    if (this.bufferPublicaciones.length > 0) {
+      this.publicaciones = [...this.publicaciones, ...this.bufferPublicaciones]
+      this.offsetActual = this.publicaciones.length
+      this.bufferPublicaciones = []
+
+      const nuevoLimite = Math.min(
+        this.cantidadVisible + this.limitePorCarga,
+        this.publicaciones.length,
+        totalReferencia
+      )
+      this.cantidadVisible = nuevoLimite
+      this.actualizarUltimas()
+
+      //si aun faltan en el servidor disparo una nueva precarga
+      const faltaEnServidor = this.offsetActual < totalReferencia
+      if (faltaEnServidor) {
+        this.precargarSiguientePagina()
+      }
+      return
+    }
+
+    //si no hay mas locales ni en buffer reviso si todavia faltan en el servidor
+    const faltaEnServidor = this.offsetActual < totalReferencia
+    if (!faltaEnServidor) {
+      return
+    }
+
+    //si faltan en el servidor pido una nueva pagina y aumento visibles
+    this.cargarPublicacionesUsuario(false, true)
   }
 
-  //reemplazo una publicacion por su version actualizada en las listas locales
+  //reemplaza una publicacion en la lista local por su version actualizada
   private reemplazarPublicacion(actualizada: Publicacion): void {
-    //recorro las publicaciones y reemplazo solo la que coincide por id
     this.publicaciones = this.publicaciones.map((item) => {
       if (item._id === actualizada._id) {
         return actualizada
       }
       return item
     })
-    //despues de reemplazar recalculo las ultimas publicaciones
+    //despues de reemplazar recalculo la lista de publicaciones visibles
     this.actualizarUltimas()
   }
 
-  //calculo las tres publicaciones mas recientes para mostrarlas en la seccion principal
+  //actualiza la sublista de publicaciones visibles y si hay mas para mostrar
   private actualizarUltimas(): void {
-    //ordeno las publicaciones de mas reciente a mas antigua
-    const ordenadas = [...this.publicaciones].sort((a, b) => {
-      const fechaA = new Date(a.createdAt).getTime()
-      const fechaB = new Date(b.createdAt).getTime()
-      return fechaB - fechaA
-    })
-    //actualizo la lista visible con todas las publicaciones cargadas hasta el momento
-    this.ultimas = ordenadas
+    const lista = this.publicaciones
+
+    //determino el total de referencia para visibilidad y flag de hayMas
+    const totalReferencia =
+      this.totalPublicaciones > 0 ? this.totalPublicaciones : lista.length
+
+    //calculo cuantas publicaciones puedo mostrar respetando limites y lista
+    const maxVisibles = Math.min(
+      this.cantidadVisible,
+      lista.length,
+      totalReferencia
+    )
+
+    //tomo las primeras publicaciones segun el maximo visible
+    this.ultimas = lista.slice(0, maxVisibles)
+    //marco si todavia quedan publicaciones por mostrar mas adelante
+    this.hayMas = maxVisibles < totalReferencia
+  }
+
+  //precarga la siguiente pagina de publicaciones para mejorar la experiencia
+  private precargarSiguientePagina(): void {
+    //si ya estoy precargando evito lanzar otra segunda llamada
+    if (this.precargando) {
+      return
+    }
+
+    const usuarioId = this.usuarioActualId
+
+    //si no hay usuario autenticado no tiene sentido precargar
+    if (usuarioId === '') {
+      return
+    }
+
+    //si ya se alcanzo el total de publicaciones no pido mas
+    if (this.totalPublicaciones > 0 && this.offsetActual >= this.totalPublicaciones) {
+      return
+    }
+
+    //uso el offset actual como inicio de la siguiente pagina
+    const offset = this.offsetActual
+    this.precargando = true
+
+    this.publicacionesService
+      .listarPublicaciones(offset, this.limitePorCarga, 'recientes', usuarioId)
+      .subscribe({
+        next: (respuesta) => {
+          //guardo la pagina precargada en el buffer para uso futuro
+          const nuevas = respuesta.publicaciones ?? []
+          this.bufferPublicaciones = nuevas
+
+          //actualizo el total de publicaciones usando el dato remoto si existe
+          const totalRemoto =
+            typeof respuesta.total === 'number'
+              ? respuesta.total
+              : this.totalPublicaciones > 0
+              ? this.totalPublicaciones
+              : this.offsetActual + nuevas.length
+
+          this.totalPublicaciones = totalRemoto
+          this.precargando = false
+
+          //si no vinieron nuevas publicaciones actualizo hayMas segun la referencia
+          if (nuevas.length === 0) {
+            const totalReferencia =
+              this.totalPublicaciones > 0 ? this.totalPublicaciones : this.offsetActual
+            this.hayMas = this.cantidadVisible < totalReferencia
+          }
+        },
+        error: () => {
+          //si falla la precarga limpio el buffer y libero el flag de precargando
+          this.precargando = false
+          this.bufferPublicaciones = []
+        }
+      })
+  }
+
+  //calcula la ruta al placeholder de imagen en base a la url del backend
+  private calcularPlaceholder(): string {
+    //elimino barra final de la base para evitar duplicados
+    const base = this.baseUrl.replace(/\/$/, '')
+
+    //si no hay base uso la ruta relativa por defecto
+    if (base === '') {
+      return '/images/placeholder.png'
+    }
+
+    //si hay base compongo la ruta absoluta al placeholder
+    return `${base}/images/placeholder.png`
   }
 }
