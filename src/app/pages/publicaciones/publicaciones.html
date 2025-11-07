@@ -45,9 +45,11 @@
           <!--muestro errores de validacion del campo titulo-->
           @if (campoEsInvalido('titulo')) {
             <span class="error">
+              <!--error si el titulo esta vacio-->
               @if (formulario.get('titulo')?.hasError('required')) {
                 Debes ingresar un titulo
               }
+              <!--error si el titulo no alcanza la longitud minima-->
               @if (formulario.get('titulo')?.hasError('minlength')) {
                 El titulo debe tener al menos 3 caracteres
               }
@@ -67,9 +69,11 @@
           <!--muestro errores de validacion del campo descripcion-->
           @if (campoEsInvalido('descripcion')) {
             <span class="error">
+              <!--error si la descripcion esta vacia-->
               @if (formulario.get('descripcion')?.hasError('required')) {
                 La descripcion es obligatoria
               }
+              <!--error si la descripcion no alcanza la longitud minima-->
               @if (formulario.get('descripcion')?.hasError('minlength')) {
                 La descripcion debe tener al menos 10 caracteres
               }
@@ -143,6 +147,7 @@
   <section class="grid">
     <!--recorro la lista de publicaciones y pinto cada tarjeta-->
     @for (publicacion of publicaciones; track publicacion._id) {
+      <!--componente tarjeta de publicacion con inputs y eventos de interaccion-->
       <app-publicacion-card
         [publicacion]="publicacion"
         [usuarioActualId]="usuarioActualId"
@@ -159,12 +164,51 @@
     <div class="loader">Cargando publicaciones...</div>
   }
 
-  <!--boton para cargar mas publicaciones cuando hay mas paginas-->
-  @if (hayMas && !cargando) {
-    <div class="paginacion">
-      <button type="button" class="secondary-btn" (click)="cargarMas()">
-        Cargar más
+  <!--controles de paginacion cuando hay publicaciones disponibles-->
+  @if (!cargando && paginasDisponibles.length > 0) {
+    <nav class="paginacion" aria-label="paginacion de publicaciones">
+      <!--boton para ir a la pagina anterior-->
+      <button
+        type="button"
+        class="paginacion-btn"
+        (click)="paginaAnterior()"
+        [disabled]="paginaActual === 1 || cargando"
+      >
+        Anterior
       </button>
-    </div>
+
+      <!--lista de botones para cada pagina disponible-->
+      <ul class="paginacion-lista">
+        @for (numero of paginasDisponibles; track numero) {
+          <li>
+            <!--indicador de pagina individual-->
+            <button
+              type="button"
+              class="pagina-indicador"
+              [ngClass]="{ active: numero === paginaActual }"
+              (click)="irAPagina(numero)"
+              [disabled]="numero === paginaActual || cargando"
+            >
+              {{ numero }}
+            </button>
+          </li>
+        }
+      </ul>
+
+      <!--boton para ir a la pagina siguiente-->
+      <button
+        type="button"
+        class="paginacion-btn"
+        (click)="paginaSiguiente()"
+        [disabled]="paginaActual === totalPaginas || cargando"
+      >
+        Siguiente
+      </button>
+    </nav>
+
+    <!--texto informativo con la pagina actual, total y cantidad de publicaciones-->
+    <p class="paginacion-info">
+      Página {{ paginaActual }} de {{ totalPaginas }} · {{ total }} publicaciones
+    </p>
   }
 </section>

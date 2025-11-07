@@ -26,14 +26,16 @@ export class Publicaciones implements OnInit {
 
   //lista de publicaciones cargadas actualmente
   protected publicaciones: Publicacion[] = []
-  //offset actual usado para la paginacion basada en offset
-  protected offsetActual = 0
   //limite de publicaciones por pagina
   protected readonly limitePorPagina = 4
   //cantidad total de publicaciones en el sistema
   protected total = 0
-  //indica si todavia hay mas publicaciones para cargar
-  protected hayMas = true
+  //numero actual de pagina que se esta mostrando
+  protected paginaActual = 1
+  //cantidad total de paginas disponibles segun el total del backend
+  protected totalPaginas = 1
+  //lista auxiliar con los numeros de pagina para pintar la paginacion
+  protected paginasDisponibles: number[] = []
   //estado de carga (true mientras se hace la peticion)
   protected cargando = false
   //tipo de orden seleccionado (recientes o por likes)
@@ -56,11 +58,13 @@ export class Publicaciones implements OnInit {
   protected nombreImagen = ''
   //indica si se esta enviando el formulario de creacion
   protected creando = false
+  //almaceno una pagina pendiente para recargar cuando finalice la peticion actual
+  private paginaPendiente: number | null = null
 
   //al iniciar el componente cargo las publicaciones por defecto
   ngOnInit(): void {
     //cargo la primera tanda de publicaciones cuando se monta el componente
-    this.cargarPublicaciones(true)
+    this.cargarPublicaciones(1)
   }
 
   //manejo del envio del formulario de nueva publicacion
@@ -96,11 +100,9 @@ export class Publicaciones implements OnInit {
         imagen: this.imagenSeleccionada,
       })
       .subscribe({
-        next: (publicacionNueva) => {
-          //inserto la publicacion nueva al inicio de la lista actual
-          this.publicaciones = [publicacionNueva, ...this.publicaciones]
-          //actualizo el total de publicaciones
-          this.total = this.total + 1
+        next: () => {
+          //programo la recarga de la primera pagina para reflejar la nueva publicacion
+          this.programarRecarga(1)
           //desactivo el estado de creacion
           this.creando = false
           //reinicio el formulario y los datos de la imagen
@@ -164,17 +166,7 @@ export class Publicaciones implements OnInit {
     //actualizo el tipo de orden
     this.orden = nuevoOrden
     //recargo las publicaciones desde cero respetando el nuevo orden
-    this.cargarPublicaciones(true)
-  }
-
-  //cargo la siguiente pagina de publicaciones si hay mas disponibles
-  protected cargarMas(): void {
-    //si no hay mas publicaciones o estoy cargando salgo
-    if (!this.hayMas || this.cargando) {
-      return
-    }
-    //pido la siguiente tanda de publicaciones
-    this.cargarPublicaciones()
+    this.programarRecarga(1)
   }
 
   //manejo del evento al dar me gusta a una publicacion
@@ -220,22 +212,14 @@ export class Publicaciones implements OnInit {
     //solicito al servicio eliminar la publicacion seleccionada
     this.publicacionesService.eliminarPublicacion(publicacion._id).subscribe({
       next: () => {
-        //elimino la publicacion del array actual
-        this.publicaciones = this.publicaciones.filter(
-          (item) => item._id !== publicacion._id
-        )
-        //actualizo el total asegurando que no baje de cero
-        this.total = this.total > 0 ? this.total - 1 : 0
+        //recargo la pagina actual para mantener la paginacion consistente
+        this.programarRecarga(this.paginaActual)
         //muestro un mensaje de exito
         mostrarSwal(
           'publicacion eliminada',
           'tu publicacion ya no aparece en el listado',
           'success'
         )
-        //si no quedan publicaciones pero hay mas, cargo la siguiente pagina
-        if (this.publicaciones.length === 0 && this.hayMas) {
-          this.cargarPublicaciones()
-        }
       },
       error: () => {
         //muestro mensaje de error cuando no se pudo eliminar
@@ -248,64 +232,116 @@ export class Publicaciones implements OnInit {
     })
   }
 
+  //navego a una pagina especifica de la paginacion
+  protected irAPagina(pagina: number): void {
+    //normalizo la pagina recibida para evitar valores invalidos
+    const paginaSolicitada = pagina < 1 ? 1 : pagina
+
+    //determino la pagina destino considerando el total actual conocido
+    const paginaDestino =
+      this.totalPaginas > 0 && paginaSolicitada > this.totalPaginas
+        ? this.totalPaginas
+        : paginaSolicitada
+
+    //si hay una peticion en curso programo la recarga y salgo
+    if (this.cargando) {
+      this.programarRecarga(paginaDestino)
+      return
+    }
+
+    //si ya estoy en la pagina destino no hago nada
+    if (this.paginaActual === paginaDestino) {
+      return
+    }
+
+    this.cargarPublicaciones(paginaDestino)
+  }
+
+  //voy a la pagina anterior si existe
+  protected paginaAnterior(): void {
+    if (this.paginaActual <= 1) {
+      return
+    }
+    this.irAPagina(this.paginaActual - 1)
+  }
+
+  //voy a la pagina siguiente si existe
+  protected paginaSiguiente(): void {
+    if (this.paginaActual >= this.totalPaginas) {
+      return
+    }
+    this.irAPagina(this.paginaActual + 1)
+  }
+
   //verifico si el boton de orden esta activo
   protected estaActivo(orden: 'recientes' | 'likes'): boolean {
     //comparo el orden recibido con el orden actual
     return this.orden === orden
   }
 
-  //funcion privada para cargar publicaciones desde el backend
-  private cargarPublicaciones(reset: boolean = false): void {
+  //funcion privada para cargar publicaciones desde el backend segun la pagina
+  private cargarPublicaciones(pagina: number): void {
     //si ya estoy cargando no hago otra peticion
     if (this.cargando) {
       return
     }
 
-    //si el parametro reset es true, reinicio los valores
-    if (reset) {
-      //borro las publicaciones actuales
-      this.publicaciones = []
-      //reinicio el offset al inicio
-      this.offsetActual = 0
-      //reinicio el total
-      this.total = 0
-      //marco que otra vez hay mas publicaciones para traer
-      this.hayMas = true
-    }
-
-    //activo el estado de carga
+    //activo el estado de carga y limpio mensajes anteriores
     this.cargando = true
-    //limpio mensajes de error anteriores
     this.mensajeError = ''
-    //guardo el offset actual en una constante local
-    const offset = this.offsetActual
 
-    //solicito las publicaciones al servicio
+    //normalizo la pagina solicitada para evitar valores invalidos
+    const paginaSegura = pagina < 1 ? 1 : pagina
+    //actualizo la pagina actual para reflejar el pedido del usuario
+    this.paginaActual = paginaSegura
+
+    //calculo el desplazamiento usando la pagina segura
+    const offset = (paginaSegura - 1) * this.limitePorPagina
+
+    //solicito las publicaciones al servicio usando offset y limite
     this.publicacionesService
       .listarPublicaciones(
         offset,
         this.limitePorPagina,
         this.orden,
-        null //ya no filtramos por autor, siempre traemos todas
+        null
       )
       .subscribe({
         next: (respuesta) => {
-          //guardo las publicaciones nuevas y actualizo datos de paginacion
+          //guardo las publicaciones recibidas para la pagina solicitada
           const nuevas = respuesta.publicaciones ?? []
-          //concateno las publicaciones anteriores con las nuevas
-          this.publicaciones = [...this.publicaciones, ...nuevas]
-          //actualizo el total recibido desde el backend
+          this.publicaciones = nuevas
+          //actualizo el total informado por el backend
           this.total = respuesta.total
-          //marco si todavia hay mas publicaciones para cargar
-          this.hayMas = respuesta.hasMore
-          //actualizo el offset usando la cantidad actual en memoria
-          this.offsetActual = this.publicaciones.length
+
+          //calculo la cantidad total de paginas
+          const totalCalculado = Math.ceil(this.total / this.limitePorPagina)
+          this.totalPaginas = totalCalculado > 0 ? totalCalculado : 1
+
+          //determino la pagina valida final considerando el total actualizado
+          const paginaValida =
+            this.total === 0
+              ? 1
+              : paginaSegura > this.totalPaginas
+              ? this.totalPaginas
+              : paginaSegura
+          this.paginaActual = paginaValida
+
+          //actualizo la lista de paginas disponibles
+          this.actualizarPaginasDisponibles()
+
           //desactivo el estado de carga
           this.cargando = false
-          //si no hay publicaciones marco que no hay mas para cargar
-          if (this.publicaciones.length === 0) {
-            this.hayMas = false
+
+          //si la pagina solicitada ya no existe recargo la ultima disponible
+          const necesitaAjuste =
+            this.total > 0 && paginaSegura > this.totalPaginas
+          if (necesitaAjuste) {
+            this.cargarPublicaciones(this.totalPaginas)
           }
+
+          //intento ejecutar alguna recarga pendiente acumulada
+          this.intentarRecargaPendiente()
         },
         error: () => {
           //desactivo el estado de carga si hubo error
@@ -314,8 +350,42 @@ export class Publicaciones implements OnInit {
           this.mensajeError = 'no pudimos traer las publicaciones en este momento'
           //muestro mensaje de error con sweetalert
           mostrarSwal('sin conexion', this.mensajeError, 'error')
+
+          //si habia una recarga pendiente vuelvo a intentarla
+          this.intentarRecargaPendiente()
         }
       })
+  }
+
+  //programo una recarga para ejecutarla cuando no haya otra peticion en curso
+  private programarRecarga(pagina: number): void {
+    const paginaSegura = pagina < 1 ? 1 : pagina
+    this.paginaPendiente = paginaSegura
+    this.intentarRecargaPendiente()
+  }
+
+  //si no estoy cargando ejecuto la recarga pendiente programada
+  private intentarRecargaPendiente(): void {
+    if (this.paginaPendiente === null) {
+      return
+    }
+
+    if (this.cargando) {
+      return
+    }
+
+    const pagina = this.paginaPendiente
+    this.paginaPendiente = null
+    this.cargarPublicaciones(pagina)
+  }
+
+  //actualizo la lista auxiliar de paginas para mostrar en la vista
+  private actualizarPaginasDisponibles(): void {
+    const totalPaginas = this.totalPaginas
+    this.paginasDisponibles = Array.from(
+      { length: totalPaginas },
+      (_, indice) => indice + 1
+    )
   }
 
   //reemplazo una publicacion existente por su version actualizada
