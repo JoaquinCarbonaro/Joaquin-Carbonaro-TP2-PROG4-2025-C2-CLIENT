@@ -338,6 +338,9 @@ export class Publicaciones implements OnInit {
             this.total > 0 && paginaSegura > this.totalPaginas
           if (necesitaAjuste) {
             this.cargarPublicaciones(this.totalPaginas)
+          } else {
+            //hago scroll al inicio de la pagina despues de cambiar de pagina
+            this.scrollAlInicio()
           }
 
           //intento ejecutar alguna recarga pendiente acumulada
@@ -386,6 +389,14 @@ export class Publicaciones implements OnInit {
       { length: totalPaginas },
       (_, indice) => indice + 1
     )
+  }
+
+  //hago scroll suave al inicio de la pagina
+  private scrollAlInicio(): void {
+    if (typeof window === 'undefined') {
+      return
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   //reemplazo una publicacion existente por su version actualizada
