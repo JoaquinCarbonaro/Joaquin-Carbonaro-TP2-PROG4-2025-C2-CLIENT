@@ -1,0 +1,186 @@
+/*overlay semitransparente del modal*/ 
+.perfil-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4.5rem 1.5rem; /*reduzco padding general*/
+  z-index: 900; /*menor que el navbar (1000) y menor que sweetalert*/
+}
+
+/*tarjeta principal del modal de edicion*/
+.perfil-modal-card {
+  background: #f1f8e9;
+  color: #1b5e20;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 560px;
+  padding: 2rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+
+  /*nuevo margen para separar el modal del navbar*/
+  margin-top: 4.5rem;
+}
+
+
+/*encabezado del modal*/
+.perfil-modal-header {
+  text-align: center;
+}
+
+/*titulo del modal*/
+.perfil-modal-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/*texto descriptivo del encabezado del modal*/
+.perfil-modal-header p {
+  margin: 0.3rem 0 0;
+  color: #33691e;
+}
+
+/*formulario del modal*/
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/*contenedor de los campos dobles nombre y apellido*/
+.perfil-form .dual-field {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/*contenedor generico de cada campo del formulario*/
+.perfil-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/*etiqueta de los campos del formulario*/
+.perfil-form .field-label {
+  font-weight: 600;
+  color: #1b5e20;
+}
+
+/*estilos base de inputs y textarea del modal*/
+.perfil-form input[type='text'],
+.perfil-form input[type='email'],
+.perfil-form input[type='date'],
+.perfil-form textarea {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid #4fc3f7;
+  font-size: 1rem;
+  color: #1b5e20;
+  background: #ffffff;
+}
+
+/*ajustes especificos del area de texto*/
+.perfil-form textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+/*espaciado extra para el campo de archivo*/
+.perfil-form .file-field {
+  gap: 0.75rem;
+}
+
+/*contenedor visual del input de archivo y nombre del archivo*/
+.perfil-form .file-input {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(79, 195, 247, 0.25);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+}
+
+/*texto que muestra el nombre del archivo elegido*/
+.perfil-form .file-name {
+  font-weight: 600;
+  color: #1b5e20;
+}
+
+/*contenedor de los botones del modal*/
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/*estilo base compartido por ambos botones del modal*/
+.modal-actions .primary-btn,
+.modal-actions .secundary-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+/*boton principal de confirmacion del modal*/
+.modal-actions .primary-btn {
+  background: #f9a825;
+  color: #1b5e20;
+}
+
+/*estado deshabilitado del boton principal*/
+.modal-actions .primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/*boton secundario para cancelar acciones*/
+.modal-actions .secundary-btn {
+  background: #4fc3f7;
+  color: #1b5e20;
+}
+
+/*efecto hover para los botones del modal*/
+.modal-actions .primary-btn:hover:not(:disabled),
+.modal-actions .secundary-btn:hover {
+  filter: brightness(1.08);
+}
+
+/*mensaje de error dentro del modal*/
+.perfil-form .error {
+  color: #d84315;
+  font-size: 0.85rem;
+}
+
+/*responsive del modal para pantallas chicas*/
+@media (max-width: 768px) {
+  /*ajusto alineacion y padding del overlay en mobile*/
+  .perfil-modal-overlay {
+    align-items: center;
+    padding: 4.5rem 1rem 4rem;
+  }
+
+  /*reduzco margen superior del modal en mobile*/
+  .perfil-modal-card {
+    margin-top: 3.5rem;
+  }
+
+  /*en mobile muestro los campos dobles en una sola columna*/
+  .perfil-form .dual-field {
+    grid-template-columns: 1fr;
+  }
+}
