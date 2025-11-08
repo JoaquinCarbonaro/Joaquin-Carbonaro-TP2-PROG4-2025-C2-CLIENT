@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
-import { Observable, map } from 'rxjs'
+import { Injectable, inject } from '@angular/core' 
+import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { Observable, BehaviorSubject, map } from 'rxjs'
 import { environment } from '../../environments/environment'
 import { Auth } from './auth'
 import { Perfil } from '../models/perfil'
@@ -13,6 +13,17 @@ interface PerfilApiRespuesta {
   publicaciones: any[]
 }
 
+//defino la forma de los datos que enviaremos para actualizar el perfil
+interface PerfilActualizacion {
+  nombre: string
+  apellido: string
+  email: string
+  userName: string
+  fechaNacimiento: string
+  descripcion: string
+  imagenPerfil: File | null
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,6 +32,11 @@ export class PerfilService {
   private readonly http = inject(HttpClient)
   //inyecto el servicio de autenticacion para obtener el token guardado
   private readonly auth = inject(Auth)
+
+  //estado reactivo del perfil actual disponible para el resto de la aplicacion
+  private readonly perfilActualSubject = new BehaviorSubject<Perfil | null>(null)
+  //expongo el observable para que otros componentes se suscriban al perfil actual
+  readonly perfilActual$ = this.perfilActualSubject.asObservable()
 
   //obtengo el perfil del usuario autenticado junto con sus publicaciones
   obtenerPerfil(): Observable<{ usuario: Perfil; publicaciones: Publicacion[] }> {
@@ -37,15 +53,53 @@ export class PerfilService {
           const publicaciones = (respuesta?.publicaciones ?? []).map((item) =>
             this.mapearPublicacion(item)
           )
+          //actualizo el estado global del perfil para que lo usen otros componentes
+          this.perfilActualSubject.next(perfil)
           //retorno un objeto con el usuario y sus publicaciones
           return { usuario: perfil, publicaciones: publicaciones }
         })
       )
   }
 
+  //actualiza los datos del perfil autenticado enviando formulario multipart
+  actualizarPerfil(datos: PerfilActualizacion): Observable<Perfil> {
+    //armo el formdata con todos los campos necesarios
+    const formData = new FormData()
+    formData.append('nombre', datos.nombre)
+    formData.append('apellido', datos.apellido)
+    formData.append('email', datos.email)
+    formData.append('userName', datos.userName)
+    formData.append('fechaNacimiento', datos.fechaNacimiento)
+    formData.append('descripcion', datos.descripcion)
+    //solo adjunto la imagen si el usuario eligio un archivo nuevo
+    if (datos.imagenPerfil) {
+      formData.append('imagenPerfil', datos.imagenPerfil)
+    }
+
+    //obtengo headers preparados para enviar formdata con token
+    const headers = this.obtenerHeadersFormulario()
+
+    return this.http
+      .put<any>(`${environment.apiBaseUrl}/usuarios/mi-perfil`, formData, { headers })
+      .pipe(
+        map((respuesta) => {
+          //tomo el usuario de la respuesta contemplando posibles formatos
+          const usuario = respuesta?.usuario ?? respuesta ?? {}
+          //mapeo el usuario al modelo perfil del front
+          const perfil = this.mapearPerfil(usuario)
+          //actualizo el estado global del perfil con la version modificada
+          this.perfilActualSubject.next(perfil)
+          //devuelvo el perfil ya normalizado
+          return perfil
+        })
+      )
+  }
+
   //armo los headers con el token jwt para autorizar la peticion
   private obtenerHeaders(): Record<string, string> {
+    //inicio el objeto de headers con content-type json
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    //obtengo el token guardado en el servicio de autenticacion
     const token = this.auth.obtenerToken()
     //si tengo token lo agrego al header de autorizacion
     if (token) {
@@ -54,9 +108,21 @@ export class PerfilService {
     return headers
   }
 
+  //arma headers para peticiones con formdata incluyendo el token
+  private obtenerHeadersFormulario(): HttpHeaders {
+    //inicio headers vacios para que angular maneje content-type de formdata
+    var headers = new HttpHeaders()
+    //obtengo el token actual
+    const token = this.auth.obtenerToken()
+    //si existe token lo agrego en el header de autorizacion
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`)
+    }
+    return headers
+  }
+
   //transformo los datos del backend al modelo perfil usado en el front
   private mapearPerfil(data: any): Perfil {
-    
     //si viene fecha de nacimiento la dejo como string plano
     const fechaNacimiento: string | null = data?.fechaNacimiento ?? null
 
@@ -75,6 +141,7 @@ export class PerfilService {
 
   //transformo los datos de una publicacion recibida al modelo publicacion
   private mapearPublicacion(data: any): Publicacion {
+    //extraigo el autor de la publicacion si viene embebido
     const autor = data?.autor ?? {}
 
     //armo los comentarios si vienen del backend
@@ -110,8 +177,10 @@ export class PerfilService {
     return {
       _id: data?._id ?? data?.id ?? '',
       titulo: data?.titulo ?? '',
+      //si no hay mensaje uso descripcion para evitar campos vacios
       mensaje: data?.mensaje ?? data?.descripcion ?? '',
       imagen: data?.imagen ?? data?.image ?? '',
+      //si no vienen fechas uso una fecha actual como fallback
       createdAt: data?.createdAt ?? data?.fecha ?? new Date().toISOString(),
       updatedAt: data?.updatedAt ?? data?.modificado ?? undefined,
       likes: likes,
@@ -127,11 +196,14 @@ export class PerfilService {
 
   //transformo los datos de un comentario al modelo comentario del front
   private mapearComentario(data: any): Comentario {
+    //extraigo los datos del usuario que realizo el comentario
     const usuario = data?.usuario ?? {}
     //construyo el comentario tipado con usuario embebido
     return {
       _id: data?._id ?? data?.id ?? '',
+      //si no hay contenido uso mensaje como respaldo
       contenido: data?.contenido ?? data?.mensaje ?? '',
+      //si no viene fecha uso fecha actual como fallback
       createdAt: data?.createdAt ?? data?.fecha ?? new Date().toISOString(),
       usuario: {
         _id: usuario?._id ?? usuario?.id ?? usuario?.uuid ?? '',
