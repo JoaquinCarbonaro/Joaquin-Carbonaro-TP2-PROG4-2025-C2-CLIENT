@@ -51,9 +51,9 @@
                 <i class="bi bi-person"></i>
               }
 
-              <!--muestro el nombre del usuario obtenido del observable nombreUsuario$-->
-              @if (nombreUsuario$ | async; as nombre) {
-                {{ nombre || 'Tripulante' }}
+              <!--muestro el nombre de usuario tomado del perfil actual-->
+              @if (perfilNavbar$ | async; as perfilNavbar) {
+                {{ perfilNavbar?.userName || 'Mochilero' }}
               }
             </span>
 

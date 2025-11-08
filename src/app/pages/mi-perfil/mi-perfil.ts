@@ -321,7 +321,7 @@ export class MiPerfil implements OnInit, OnDestroy {
         //remuevo la publicacion eliminada de la lista local
         this.publicaciones = this.publicaciones.filter((item) => item._id !== publicacion._id)
         //actualizo el total local de publicaciones evitando numeros negativos
-        this.totalPublicaciones = this.totalPubliciciones > 0 ? this.totalPublicaciones - 1 : 0
+        this.totalPublicaciones = this.totalPublicaciones > 0 ? this.totalPublicaciones - 1 : 0
         //actualizo el offset para que coincida con la cantidad actual en memoria
         this.offsetActual = this.publicaciones.length
         //ajusto la cantidad visible para no exceder el tamaño de la lista

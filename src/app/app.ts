@@ -20,7 +20,7 @@ export class App implements OnInit {
   //servicio de autenticacion para manejar login, logout y estado del usuario
   private readonly authService = inject(Auth)
 
-  //servicio de perfil para obtener los datos del usuario (por ejemplo la imagen)
+  //servicio de perfil para obtener y compartir los datos del usuario
   private readonly perfilService = inject(PerfilService)
 
   //instancia del router para navegar entre paginas de la aplicacion
@@ -31,6 +31,9 @@ export class App implements OnInit {
 
   //flujo reactivo con el nombre del usuario autenticado
   nombreUsuario$ = this.authService.nombreUsuario$
+
+  //flujo reactivo con el perfil actual para usarlo en el navbar
+  perfilNavbar$ = this.perfilService.perfilActual$
 
   //url base del backend para construir rutas completas
   protected readonly baseUrl = environment.apiBaseUrl
@@ -46,15 +49,28 @@ export class App implements OnInit {
     //inicio la vigilancia del token guardado (renovacion y cierre de sesion si expira)
     this.authService.iniciarVigilanciaToken()
 
-    //me suscribo al estado de login para reaccionar a cambios de sesion
+    //cuando cambia el estado de login decido si cargo o limpio el perfil
     this.usuario$.subscribe((logueado) => {
       if (logueado) {
-        //si hay usuario logueado cargo el avatar para mostrar en el navbar
-        this.cargarAvatarNavbar()
+        //si hay usuario logueado pido el perfil inicial
+        this.perfilService.obtenerPerfil().subscribe({
+          error: () => {
+            this.avatarNavbar = ''
+          }
+        })
       } else {
-        //si no hay sesion limpia la imagen del navbar
+        //si no hay sesion limpio la imagen del navbar
         this.avatarNavbar = ''
       }
+    })
+
+    //me suscribo al perfil actual para mantener sincronizado el avatar del navbar
+    this.perfilNavbar$.subscribe((perfil) => {
+      if (!perfil) {
+        this.avatarNavbar = ''
+        return
+      }
+      this.avatarNavbar = this.resolverImagen(perfil.imagenPerfil ?? '')
     })
   }
 
@@ -113,21 +129,5 @@ export class App implements OnInit {
     const ruta = imagen.startsWith('/') ? imagen : `/images/${imagen}`
     //devuelvo la url completa lista para usar en el src
     return `${base}${ruta}`
-  }
-
-  //cargo los datos del perfil solo para obtener la imagen del usuario
-  private cargarAvatarNavbar(): void {
-    this.perfilService.obtenerPerfil().subscribe({
-      next: (respuesta) => {
-        //tomo la propiedad imagenPerfil del usuario (si no existe uso string vacio)
-        const imagen = respuesta.usuario?.imagenPerfil ?? ''
-        //construyo la url final usando resolverImagen
-        this.avatarNavbar = this.resolverImagen(imagen)
-      },
-      error: () => {
-        //si hay error al obtener el perfil dejo el avatar vacio
-        this.avatarNavbar = ''
-      }
-    })
   }
 }

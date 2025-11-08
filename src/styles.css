@@ -1,1 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
+/*tipografia base*/
+:root {
+  font-family: 'Montserrat', Arial, sans-serif;
+  color-scheme: light;
+}
+
+/*reset basico*/
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background-color: #1b5e20;
+}
+
+/*estructura base del body con centrado del contenido*/
+body {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/*cuando hay un modal abierto, bloqueo el scroll del fondo*/
+body.modal-abierto {
+  overflow: hidden;
+}
+
+/*componente principal angular que ocupa todo el espacio disponible*/
+app-root {
+  flex: 1;
+}
+
+/*mantengo los enlaces con el color del texto actual*/
+a {
+  color: inherit;
+}
