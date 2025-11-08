@@ -1,3 +1,5 @@
+@import '../../utils/perfil-modal.css';
+
 /*contenedor principal de la pagina de perfil*/
 .perfil-page {
   display: flex;
@@ -9,6 +11,7 @@
   width: 100%;
   margin: 0 auto;
   text-align: center;
+  position: relative;
 }
 
 /*contenedor base de mensajes de estado y alerta*/
@@ -33,6 +36,14 @@
   border: 1px solid rgba(255, 107, 107, 0.4);
 }
 
+/*contenedor que envuelve tarjeta de perfil y boton flotante*/
+.perfil-card-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 /*tarjeta principal del perfil del usuario*/
 .perfil-card {
   display: flex;
@@ -46,8 +57,6 @@
   border: 1px solid rgba(79, 195, 247, 0.45);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
   box-sizing: border-box;
 }
 
@@ -84,6 +93,29 @@
   align-items: flex-start;
   text-align: left;
   max-width: 550px;
+}
+
+/*boton flotante para abrir el modal de edicion*/
+.editar-btn-flotante {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.8rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.6rem;
+  background: #f9a825;
+  color: #1b5e20;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+  transition: transform 0.15s ease, filter 0.2s ease;
+}
+
+/*efecto hover del boton flotante*/
+.editar-btn-flotante:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
 }
 
 /*nombre completo del usuario*/
@@ -249,6 +281,11 @@
     gap: 1.5rem;
   }
 
+  /*ajusto el contenedor del recuadro en mobile*/
+  .perfil-card-wrapper {
+    max-width: 100%;
+  }
+
   /*muestro la tarjeta de perfil en columna y centrada*/
   .perfil-card {
     flex-direction: column;
@@ -287,6 +324,14 @@
   .sin-publicaciones {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
+  }
+
+  /*ajusto el boton flotante para que no tape contenido en mobile*/
+  .editar-btn-flotante {
+    position: static;
+    width: 100%;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   }
 }
 

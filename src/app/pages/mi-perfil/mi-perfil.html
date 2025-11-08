@@ -1,95 +1,112 @@
 <section class="perfil-page">
   <!--muestro el estado de carga del perfil-->
   @if (cargando) {
+    <!--mensaje temporal mientras se carga la informacion-->
     <div class="estado">Cargando tu información...</div>
   }
 
   <!--muestro el mensaje de error si hubo problema al cargar-->
   @if (!cargando && mensajeError !== '') {
+    <!--alerta visible si ocurre un error-->
     <div class="alerta">{{ mensajeError }}</div>
   }
 
   <!--muestro el contenido principal solo si no hay errores y tengo perfil-->
   @if (!cargando && mensajeError === '' && perfil) {
 
-    <!--tarjeta del perfil del usuario-->
-    <div class="perfil-card">
-      <!--muestro la imagen de perfil si existe-->
-      @if (resolverImagen(perfil.imagenPerfil) !== '') {
-        <img
-          class="perfil-avatar"
-          [src]="resolverImagen(perfil.imagenPerfil)"
-          [alt]="perfil.userName"
-          loading="lazy"
-          decoding="async"
-          (error)="onAvatarPerfilError($event)"
-        />
-      }
-      <!--si no hay imagen muestro las iniciales del usuario-->
-      @else {
-        <div class="perfil-avatar perfil-avatar-placeholder">{{ inicialesPerfil() }}</div>
-      }
+    <!--envoltorio para la tarjeta del perfil y el boton de edicion-->
+    <div class="perfil-card-wrapper">
+      <!--boton flotante para abrir el modal de edicion-->
+      <button
+        type="button"
+        class="editar-btn-flotante"
+        (click)="abrirModalEdicion()"
+      >
+        Editar perfil
+      </button>
 
-      <!--detalles del perfil-->
-      <div class="perfil-detalle">
-        <!--nombre completo en grande-->
-        <h1 class="nombre">{{ perfil.nombre }} {{ perfil.apellido }}</h1>
-        <!--nombre de usuario con arroba-->
-        <p class="usuario">@{{ perfil.userName }}</p>
-        <!--descripcion breve del perfil-->
-        <p class="descripcion">{{ perfil.descripcion }}</p>
+      <!--tarjeta principal del perfil del usuario-->
+      <div class="perfil-card">
+        <!--muestro la imagen de perfil si esta cargada-->
+        @if (resolverImagen(perfil.imagenPerfil) !== '') {
+          <!--imagen de perfil del usuario-->
+          <img
+            class="perfil-avatar"
+            [src]="resolverImagen(perfil.imagenPerfil)"
+            [alt]="perfil.userName"
+            loading="lazy"
+            decoding="async"
+            (error)="onAvatarPerfilError($event)"
+          />
+        }
+        <!--si no hay imagen muestro iniciales del usuario-->
+        @else {
+          <!--espacio con iniciales del usuario-->
+          <div class="perfil-avatar perfil-avatar-placeholder">
+            {{ inicialesPerfil() }}
+          </div>
+        }
+
+        <!--bloque con informacion principal del perfil-->
+        <div class="perfil-detalle">
+          <!--nombre completo-->
+          <h1 class="nombre">{{ perfil.nombre }} {{ perfil.apellido }}</h1>
+          <!--nombre de usuario-->
+          <p class="usuario">@{{ perfil.userName }}</p>
+          <!--descripcion personal-->
+          <p class="descripcion">{{ perfil.descripcion }}</p>
+        </div>
       </div>
     </div>
 
-    <!--seccion con datos detallados del perfil-->
+    <!--seccion con los datos detallados del perfil-->
     <section class="perfil-datos">
-      <!--dato de correo del usuario-->
+      <!--bloque de correo electronico-->
       <div class="dato">
         <h2 class="dato-titulo">Correo</h2>
         <p class="dato-valor">{{ perfil.email }}</p>
       </div>
 
-      <!--dato de fecha de nacimiento-->
+      <!--bloque con fecha de nacimiento-->
       <div class="dato">
         <h2 class="dato-titulo">Fecha de nacimiento</h2>
         <p class="dato-valor">
-          <!--muestro la fecha solo si viene en el perfil-->
           @if (perfil.fechaNacimiento) {
-            {{ perfil.fechaNacimiento | date: "d 'de' MMMM 'de' y" }}
-          } 
-          <!--texto alternativo si no hay fecha cargada-->
-          @else {
+            {{ formatearFechaNacimientoTexto(perfil.fechaNacimiento) }}
+          } @else {
             No especificada
           }
         </p>
       </div>
     </section>
 
-    <!--seccion de publicaciones del perfil-->
+    <!--seccion donde se muestran las publicaciones del usuario-->
     <section class="perfil-publicaciones">
-      <!--encabezado de la seccion de publicaciones-->
+      <!--encabezado de publicaciones-->
       <header class="publicaciones-header">
-        <!--titulo principal de la seccion-->
+        <!--titulo principal-->
         <h2 class="publicaciones-titulo">Tus últimas publicaciones</h2>
-        <!--texto explicativo de cuantas publicaciones se muestran-->
+        <!--subtitulo explicativo-->
         <p class="publicaciones-subtitulo">
-          Se cargan tres publicaciones por vez. Usa el botón para ver más cuando estén disponibles.
+          Se cargan tres publicaciones por vez. Usa el botón para ver más cuando
+          estén disponibles.
         </p>
       </header>
 
-      <!--ramifico segun si el usuario tiene publicaciones o no-->
+      <!--verifico si el usuario tiene publicaciones-->
       @if (ultimas.length === 0) {
-        <!--mensaje cuando todavia no hay publicaciones-->
+        <!--mensaje si aun no hay publicaciones-->
         <div class="sin-publicaciones">
           Todavía no compartiste publicaciones.
         </div>
-      } 
-      <!--muestro el listado de publicaciones cuando hay datos-->
+      }
+      <!--si hay publicaciones las muestro en una lista-->
       @else {
+        <!--contenedor de tarjetas de publicaciones-->
         <div class="lista-publicaciones">
-          <!--recorro las ultimas publicaciones del usuario-->
+          <!--recorro cada publicacion y muestro su tarjeta-->
           @for (publicacion of ultimas; track publicacion._id) {
-            <!--tarjeta reutilizable de publicacion con eventos de interaccion-->
+            <!--componente reutilizable de publicacion-->
             <app-publicacion-card
               [publicacion]="publicacion"
               [usuarioActualId]="usuarioActualId"
@@ -101,8 +118,9 @@
           }
         </div>
 
-        <!--boton para cargar mas publicaciones del perfil-->
+        <!--boton para cargar mas publicaciones-->
         @if (hayMas) {
+          <!--contenedor del boton de carga-->
           <div class="acciones-cargar-mas">
             <button
               type="button"
@@ -118,3 +136,155 @@
     </section>
   }
 </section>
+
+<!--modal de edicion del perfil-->
+@if (mostrarModalEdicion) {
+  <!--fondo semitransparente del modal-->
+  <div class="perfil-modal-overlay">
+    <!--tarjeta principal del modal-->
+    <div class="perfil-modal-card">
+      <!--encabezado del modal-->
+      <div class="perfil-modal-header">
+        <h2>Editar perfil</h2>
+        <p>Actualizá tus datos y guardalos cuando termines.</p>
+      </div>
+
+      <!--formulario reactivo para editar perfil-->
+      <form
+        [formGroup]="perfilForm"
+        (ngSubmit)="guardarCambiosPerfil()"
+        class="perfil-form"
+      >
+        <!--campos de nombre y apellido en la misma fila-->
+        <div class="dual-field">
+          <label class="field">
+            <span class="field-label">Nombre</span>
+            <input
+              type="text"
+              formControlName="nombre"
+              placeholder="Tu nombre"
+            />
+            <!--mensaje de error si el campo es invalido-->
+            @if (perfilForm.get('nombre')?.invalid && perfilForm.get('nombre')?.touched) {
+              <span class="error">Ingresá al menos 2 letras.</span>
+            }
+          </label>
+
+          <label class="field">
+            <span class="field-label">Apellido</span>
+            <input
+              type="text"
+              formControlName="apellido"
+              placeholder="Tu apellido"
+            />
+            <!--mensaje de error si el campo es invalido-->
+            @if (perfilForm.get('apellido')?.invalid && perfilForm.get('apellido')?.touched) {
+              <span class="error">Ingresá al menos 2 letras.</span>
+            }
+          </label>
+        </div>
+
+        <!--campo de correo electronico-->
+        <label class="field">
+          <span class="field-label">Correo electrónico</span>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="tu@mail.com"
+          />
+          <!--error de formato de correo-->
+          @if (perfilForm.get('email')?.invalid && perfilForm.get('email')?.touched) {
+            <span class="error">Revisá el formato del correo.</span>
+          }
+        </label>
+
+        <!--campo de nombre de usuario-->
+        <label class="field">
+          <span class="field-label">Nombre de usuario</span>
+          <input
+            type="text"
+            formControlName="userName"
+            placeholder="mochilero2024"
+          />
+          <!--error si no cumple longitud o formato-->
+          @if (perfilForm.get('userName')?.invalid && perfilForm.get('userName')?.touched) {
+            <span class="error">
+              Debe tener entre 4 y 20 caracteres sin espacios.
+            </span>
+          }
+        </label>
+
+        <!--campo de fecha de nacimiento-->
+        <label class="field">
+          <span class="field-label">Fecha de nacimiento</span>
+          <input type="date" formControlName="fechaNacimiento" />
+          <!--errores personalizados de validacion de fecha-->
+          @if (perfilForm.get('fechaNacimiento')?.touched && perfilForm.get('fechaNacimiento')?.errors) {
+            <span class="error">
+              @if (perfilForm.get('fechaNacimiento')?.hasError('futureDate')) {
+                {{ mensajeFechaFutura }}
+              }
+              @else if (perfilForm.get('fechaNacimiento')?.hasError('underAge')) {
+                {{ mensajeMenorEdad }}
+              }
+              @else if (perfilForm.get('fechaNacimiento')?.hasError('invalidDate')) {
+                Ingresá una fecha real.
+              }
+              @else {
+                Seleccioná tu fecha de nacimiento.
+              }
+            </span>
+          }
+        </label>
+
+        <!--campo de descripcion personal-->
+        <label class="field">
+          <span class="field-label">Descripción breve</span>
+          <textarea
+            rows="4"
+            formControlName="descripcion"
+            placeholder="Contá algo sobre vos"
+          ></textarea>
+          <!--mensaje de error si no cumple longitud-->
+          @if (perfilForm.get('descripcion')?.invalid && perfilForm.get('descripcion')?.touched) {
+            <span class="error">Escribí entre 5 y 200 caracteres.</span>
+          }
+        </label>
+
+        <!--campo de imagen de perfil-->
+        <label class="field file-field">
+          <span class="field-label">Imagen de perfil</span>
+          <div class="file-input">
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onImagenPerfilChange($event)"
+            />
+            <!--nombre del archivo seleccionado-->
+            <span class="file-name">{{ nombreArchivoSeleccionado }}</span>
+          </div>
+        </label>
+
+        <!--botones de accion del modal-->
+        <div class="modal-actions">
+          <!--boton para cancelar-->
+          <button
+            type="button"
+            class="secundary-btn"
+            (click)="cerrarModalEdicion()"
+          >
+            Cancelar
+          </button>
+          <!--boton para guardar cambios-->
+          <button
+            type="submit"
+            class="primary-btn"
+            [disabled]="editandoPerfil"
+          >
+            {{ editandoPerfil ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

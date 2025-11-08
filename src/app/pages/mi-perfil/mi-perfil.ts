@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core'
+import { Component, OnInit, OnDestroy, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms'
 import { PerfilService } from '../../services/perfil'
 import { Perfil } from '../../models/perfil'
 import { Publicacion } from '../../models/publicacion'
@@ -8,15 +9,26 @@ import { environment } from '../../../environments/environment'
 import { PublicacionCardComponent } from '../../components/publicacion-card/publicacion-card'
 import { PublicacionesService } from '../../services/publicaciones'
 import { Auth } from '../../services/auth'
+import { MENSAJE_FECHA_FUTURA, MENSAJE_MENOR_EDAD } from '../../utils/date-validators'
+import { MENSAJE_IMAGEN_INVALIDA } from '../../utils/file-upload'
+import {
+  crearFormularioModalPerfil,
+  prepararFormularioModalPerfil,
+  restablecerFormularioModalPerfil,
+  manejarCambioImagenModalPerfil,
+  limpiarCamposTextoModalPerfil,
+  obtenerMensajeErrorFechaModalPerfil,
+  obtenerDatosActualizacionModalPerfil
+} from '../../utils/perfil-modal'
 
 @Component({
   standalone: true,
   selector: 'app-mi-perfil-page',
   templateUrl: './mi-perfil.html',
   styleUrl: './mi-perfil.css',
-  imports: [CommonModule, PublicacionCardComponent]
+  imports: [CommonModule, ReactiveFormsModule, PublicacionCardComponent]
 })
-export class MiPerfil implements OnInit {
+export class MiPerfil implements OnInit, OnDestroy {
 
   //inyecto el servicio de perfil para obtener datos del usuario
   private readonly perfilService = inject(PerfilService)
@@ -24,6 +36,8 @@ export class MiPerfil implements OnInit {
   private readonly publicacionesService = inject(PublicacionesService)
   //inyecto el servicio de autenticacion para conocer el usuario actual
   private readonly authService = inject(Auth)
+  //inyecto formbuilder para crear el formulario reactivo del modal
+  private readonly fb = inject(FormBuilder)
 
   //perfil del usuario actualmente autenticado
   protected perfil: Perfil | null = null
@@ -51,6 +65,21 @@ export class MiPerfil implements OnInit {
   protected hayMas = false
   //indica si se esta realizando una llamada activa para cargar publicaciones
   protected cargandoPublicaciones = false
+  //indica si el modal de edicion esta visible
+  protected mostrarModalEdicion = false
+  //indica si se esta enviando la actualizacion del perfil
+  protected editandoPerfil = false
+  //nombre del archivo seleccionado para la imagen del perfil
+  protected nombreArchivoSeleccionado = 'mantendras tu imagen actual'
+  //vista previa local de la imagen seleccionada
+  protected vistaPreviaImagen = ''
+  //mensajes reutilizados en la plantilla para los errores de fecha
+  protected readonly mensajeFechaFutura = MENSAJE_FECHA_FUTURA
+  protected readonly mensajeMenorEdad = MENSAJE_MENOR_EDAD
+  protected readonly mensajeImagenInvalida = MENSAJE_IMAGEN_INVALIDA
+
+  //formulario reactivo utilizado dentro del modal para editar el perfil
+  protected readonly perfilForm = crearFormularioModalPerfil(this.fb)
 
   //cantidad de publicaciones que se muestran actualmente en la vista
   private cantidadVisible = this.limitePorCarga
@@ -62,6 +91,143 @@ export class MiPerfil implements OnInit {
   //al inicializar el componente solicito el perfil y sus publicaciones
   ngOnInit(): void {
     this.cargarPerfil()
+  }
+
+  //si el componente se destruye me aseguro de restaurar el estado del body
+  ngOnDestroy(): void {
+    this.actualizarClaseBodyModal(false)
+  }
+
+  //abre el modal de edicion precargando los datos actuales del perfil
+  protected abrirModalEdicion(): void {
+    //si todavia no tengo perfil aviso al usuario y corto el flujo
+    if (!this.perfil) {
+      mostrarSwal('perfil no disponible', 'intenta nuevamente mas tarde', 'error')
+      return
+    }
+
+    //guardo una referencia al perfil actual para preparar el formulario
+    const perfilActual = this.perfil
+    //preparo el formulario del modal usando helpers reutilizables
+    const estadoModal = prepararFormularioModalPerfil(
+      this.perfilForm,
+      perfilActual,
+      (fecha) => this.formatearFechaParaInput(fecha ?? ''),
+      (ruta) => this.resolverImagen(ruta)
+    )
+
+    //actualizo la vista previa de la imagen y el nombre del archivo mostrado
+    this.vistaPreviaImagen = estadoModal.vistaPrevia
+    this.nombreArchivoSeleccionado = estadoModal.nombreArchivo
+
+    //muestro el modal y bloqueo el scroll del fondo
+    this.mostrarModalEdicion = true
+    this.actualizarClaseBodyModal(true)
+  }
+
+  //cierra el modal de edicion y limpia el formulario
+  protected cerrarModalEdicion(): void {
+    //oculto el modal y marco que ya no estoy editando
+    this.mostrarModalEdicion = false
+    this.editandoPerfil = false
+    //restauro el formulario a su estado inicial
+    restablecerFormularioModalPerfil(this.perfilForm)
+    //restablezco el nombre del archivo y la vista previa
+    this.nombreArchivoSeleccionado = 'mantendras tu imagen actual'
+    this.vistaPreviaImagen = ''
+    //restauro el scroll del fondo quitando la clase del body
+    this.actualizarClaseBodyModal(false)
+  }
+
+  //maneja el cambio de archivo en el input de imagen del modal
+  protected onImagenPerfilChange(evento: Event): void {
+    //delego la logica de manejo de imagen al helper reutilizable
+    const resultado = manejarCambioImagenModalPerfil(
+      evento,
+      this.perfilForm,
+      this.perfil,
+      (ruta) => this.resolverImagen(ruta),
+      (valor) => {
+        //actualizo la vista previa de la imagen cuando el helper lo indica
+        this.vistaPreviaImagen = valor
+      }
+    )
+
+    //actualizo el nombre del archivo que muestro en la interfaz
+    this.nombreArchivoSeleccionado = resultado.nombreArchivo
+
+    //si el helper indica error aviso al usuario con un swal
+    if (resultado.error) {
+      mostrarSwal('formato no soportado', this.mensajeImagenInvalida, 'warning')
+    }
+  }
+
+  //envia los cambios del formulario al backend
+  protected guardarCambiosPerfil(): void {
+    //si ya estoy enviando una actualizacion evito duplicar la llamada
+    if (this.editandoPerfil) {
+      return
+    }
+
+    //defino que campos de texto quiero limpiar antes de validar
+    const camposTexto = ['nombre', 'apellido', 'email', 'userName', 'descripcion']
+    //normalizo espacios en los campos de texto usando el helper
+    limpiarCamposTextoModalPerfil(this.perfilForm, camposTexto)
+    //fuerzo recalculo de validaciones sin disparar eventos
+    this.perfilForm.updateValueAndValidity({ emitEvent: false })
+
+    //si el formulario no es valido marco todo como tocado y aviso
+    if (this.perfilForm.invalid) {
+      this.perfilForm.markAllAsTouched()
+      //intento obtener un mensaje especifico relacionado con la fecha
+      const mensajeFecha = obtenerMensajeErrorFechaModalPerfil(this.perfilForm, {
+        futuro: this.mensajeFechaFutura,
+        menorEdad: this.mensajeMenorEdad
+      })
+      //si tengo mensaje de fecha lo muestro con swal informativo
+      if (mensajeFecha) {
+        mostrarSwal(mensajeFecha.titulo, mensajeFecha.detalle, 'info')
+      } else {
+        //si no hay mensaje especifico aviso que revise el formulario en general
+        mostrarSwal('revisa el formulario', 'hay datos pendientes de corregir', 'info')
+      }
+      return
+    }
+
+    //marco que estoy enviando la actualizacion al backend
+    this.editandoPerfil = true
+
+    //armo el payload de actualizacion usando el helper centralizado
+    this.perfilService
+      .actualizarPerfil(obtenerDatosActualizacionModalPerfil(this.perfilForm))
+      .subscribe({
+        next: (perfilActualizado) => {
+          //actualizo el perfil en memoria con la respuesta del backend
+          this.perfil = perfilActualizado
+          //desmarco el estado de edicion y cierro el modal
+          this.editandoPerfil = false
+          this.mostrarModalEdicion = false
+          //restauro el formulario para futuras ediciones
+          restablecerFormularioModalPerfil(this.perfilForm)
+          //reseteo el texto del archivo mostrado
+          this.nombreArchivoSeleccionado = 'mantendras tu imagen actual'
+          //actualizo la vista previa con la nueva imagen del perfil
+          this.vistaPreviaImagen = this.resolverImagen(perfilActualizado.imagenPerfil)
+          //restauro el scroll del body
+          this.actualizarClaseBodyModal(false)
+          //informo al usuario que el perfil se actualizo correctamente
+          mostrarSwal('perfil actualizado', 'tus cambios se guardaron correctamente', 'success')
+        },
+        error: (error) => {
+          //si algo falla libero el flag de edicion
+          this.editandoPerfil = false
+          //intento obtener el mensaje del backend o uso uno generico
+          const mensaje = error?.error?.message ?? 'no pudimos actualizar tu perfil'
+          const detalle = Array.isArray(mensaje) ? mensaje.join(', ') : String(mensaje)
+          //muestro el mensaje de error al usuario
+          mostrarSwal('sin cambios', detalle, 'error')
+        }
+      })
   }
 
   //resuelve la url absoluta de una imagen de perfil o publicacion
@@ -155,7 +321,7 @@ export class MiPerfil implements OnInit {
         //remuevo la publicacion eliminada de la lista local
         this.publicaciones = this.publicaciones.filter((item) => item._id !== publicacion._id)
         //actualizo el total local de publicaciones evitando numeros negativos
-        this.totalPublicaciones = this.totalPublicaciones > 0 ? this.totalPublicaciones - 1 : 0
+        this.totalPublicaciones = this.totalPubliciciones > 0 ? this.totalPublicaciones - 1 : 0
         //actualizo el offset para que coincida con la cantidad actual en memoria
         this.offsetActual = this.publicaciones.length
         //ajusto la cantidad visible para no exceder el tamaño de la lista
@@ -198,6 +364,9 @@ export class MiPerfil implements OnInit {
       //si la llamada es exitosa guardo el perfil y cargo las publicaciones
       next: (respuesta) => {
         this.perfil = respuesta.usuario
+        //actualizo la vista previa con la imagen actual del perfil
+        this.vistaPreviaImagen = this.resolverImagen(this.perfil.imagenPerfil)
+        //despues de tener el perfil inicio la carga de publicaciones
         this.cargarPublicacionesUsuario(true, false)
       },
       //si falla la llamada muestro mensaje de error y detengo el estado de carga
@@ -207,6 +376,48 @@ export class MiPerfil implements OnInit {
         mostrarSwal('sin conexion', this.mensajeError, 'error')
       }
     })
+  }
+
+  //formatea una fecha para que sea compatible con inputs tipo date
+  private formatearFechaParaInput(fecha: Date | string | null | undefined): string {
+    //si no viene fecha devuelvo cadena vacia
+    if (!fecha) {
+      return ''
+    }
+
+    //si viene como string desde el backend
+    if (typeof fecha === 'string') {
+      const trimmed = fecha.trim()
+
+      //si ya esta en formato YYYY-MM-DD la uso tal cual
+      if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+        return trimmed
+      }
+
+      //si llega en otro formato ISO, intento convertir una sola vez
+      const posible = new Date(trimmed)
+      if (!Number.isNaN(posible.getTime())) {
+        const y = posible.getFullYear()
+        const m = `${posible.getMonth() + 1}`.padStart(2, '0')
+        const d = `${posible.getDate()}`.padStart(2, '0')
+        return `${y}-${m}-${d}`
+      }
+
+      //si no puedo interpretarlo devuelvo vacio
+      return ''
+    }
+
+    //si viene como Date
+    const valorFecha = fecha
+    //si la fecha no es valida devuelvo vacio
+    if (!valorFecha || Number.isNaN(valorFecha.getTime())) {
+      return ''
+    }
+    //armo el formato YYYY-MM-DD a partir del objeto Date
+    const year = valorFecha.getFullYear()
+    const month = `${valorFecha.getMonth() + 1}`.padStart(2, '0')
+    const day = `${valorFecha.getDate()}`.padStart(2, '0')
+    return `${year}-${month}-${day}`
   }
 
   //reset -> reinicia listas, expandVisible -> aumenta cantidadVisible en +3
@@ -354,6 +565,7 @@ export class MiPerfil implements OnInit {
         totalReferencia
       )
       this.cantidadVisible = nuevoLimite
+      //despues de cambiar el limite actualizo la lista visible
       this.actualizarUltimas()
 
       //si faltan publicaciones en el servidor intento precargar la siguiente pagina
@@ -366,16 +578,21 @@ export class MiPerfil implements OnInit {
 
     //si no hay mas locales ocultas pero el buffer tiene publicaciones las agrego
     if (this.bufferPublicaciones.length > 0) {
+      //extiendo la lista local con lo que habia precargado
       this.publicaciones = [...this.publicaciones, ...this.bufferPublicaciones]
+      //actualizo el offset para reflejar la nueva cantidad
       this.offsetActual = this.publicaciones.length
+      //limpio el buffer ya consumido
       this.bufferPublicaciones = []
 
+      //calculo el nuevo limite respetando listado y total de referencia
       const nuevoLimite = Math.min(
         this.cantidadVisible + this.limitePorCarga,
         this.publicaciones.length,
         totalReferencia
       )
       this.cantidadVisible = nuevoLimite
+      //refresco la lista visible con las publicaciones actualizadas
       this.actualizarUltimas()
 
       //si aun faltan en el servidor disparo una nueva precarga
@@ -398,6 +615,7 @@ export class MiPerfil implements OnInit {
 
   //reemplaza una publicacion en la lista local por su version actualizada
   private reemplazarPublicacion(actualizada: Publicacion): void {
+    //recorro la lista y cuando encuentro el id coincidente uso la version nueva
     this.publicaciones = this.publicaciones.map((item) => {
       if (item._id === actualizada._id) {
         return actualizada
@@ -499,4 +717,84 @@ export class MiPerfil implements OnInit {
     //si hay base compongo la ruta absoluta al placeholder
     return `${base}/images/placeholder.png`
   }
+
+  //agrega o quita la clase en el body para bloquear el scroll del fondo
+  private actualizarClaseBodyModal(activo: boolean): void {
+    //valido que document exista por si se ejecuta del lado del servidor
+    if (typeof document === 'undefined') {
+      return
+    }
+    const body = document.body
+    //si no hay body corto la ejecucion
+    if (!body) {
+      return
+    }
+    //segun el flag agrego o quito la clase de modal abierto
+    if (activo) {
+      body.classList.add('modal-abierto')
+    } else {
+      body.classList.remove('modal-abierto')
+    }
+  }
+
+  //devuelve la fecha en texto: "8 de agosto de 2005" a partir de "2005-08-08" o Date
+  protected formatearFechaNacimientoTexto(fecha: string | Date | null | undefined): string {
+    //si no hay fecha devuelvo cadena vacia
+    if (!fecha) {
+      return ''
+    }
+
+    let year: number
+    let month: number
+    let day: number
+
+    //si viene como objeto Date
+    if (fecha instanceof Date) {
+      year = fecha.getFullYear()
+      month = fecha.getMonth() + 1
+      day = fecha.getDate()
+    }
+    //si viene como string "YYYY-MM-DD"
+    else if (typeof fecha === 'string') {
+      const trimmed = fecha.trim()
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed)
+
+      //si no coincide con el formato esperado, devuelvo el texto tal cual
+      if (!match) {
+        return trimmed
+      }
+
+      year = Number(match[1])
+      month = Number(match[2])
+      day = Number(match[3])
+    }
+    //si no es ni string ni Date
+    else {
+      return ''
+    }
+
+    const nombresMes = [
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre'
+    ]
+
+    //valido rango basico de mes
+    if (month < 1 || month > 12) {
+      return `${day}/${month}/${year}`
+    }
+
+    const nombreMes = nombresMes[month - 1]
+    return `${day} de ${nombreMes} de ${year}`
+  }
+
 }
