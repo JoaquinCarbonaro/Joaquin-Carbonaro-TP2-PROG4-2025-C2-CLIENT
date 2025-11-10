@@ -1,1 +1,52 @@
-<p>publicacion works!</p>
+<section class="publicacion-page">
+
+  <!--encabezado con boton para volver a la lista de publicaciones-->
+  <header class="detalle-header">
+    <!--enlace que redirige a la pagina de publicaciones-->
+    <a
+      class="volver-btn"
+      routerLink="/publicaciones"
+      aria-label="volver a publicaciones"
+    >
+      <!--texto visible del boton volver-->
+      &#8592; Volver a publicaciones
+    </a>
+  </header>
+
+  <!--bloque que se muestra mientras la publicacion se esta cargando-->
+  @if (cargandoPublicacion) {
+    <!--estado de carga de la publicacion-->
+    <div class="estado">Cargando publicación...</div>
+  }
+
+  <!--bloque que se muestra si hubo un error al cargar la publicacion-->
+  @if (!cargandoPublicacion && mensajeError !== '') {
+    <!--mensaje de error mostrado al usuario-->
+    <div class="alerta">{{ mensajeError }}</div>
+  }
+
+  <!--bloque que se muestra cuando la publicacion cargo correctamente-->
+  @if (!cargandoPublicacion && mensajeError === '' && publicacion) {
+    <!--contenedor que centra la tarjeta de detalle de la publicacion-->
+    <div class="detalle-card-wrapper">
+      <!--componente que renderiza la tarjeta completa de la publicacion-->
+      <app-publicacion-card
+        [publicacion]="publicacion"               
+        [usuarioActualId]="usuarioActualId"       
+        [baseUrl]="baseUrl"                       
+        [modoDetalle]="true"                      
+        (like)="onDarLike($event)"                
+        (unlike)="onQuitarLike($event)"           
+        (eliminar)="onEliminar($event)"           
+      />
+      <!--datos de la publicacion actual-->
+      <!--uuid del usuario logueado-->
+      <!--url base del servidor-->
+      <!--activa el modo vista detalle-->
+      <!--evento al dar me gusta-->
+      <!--evento al quitar me gusta-->
+      <!--evento al eliminar la publicacion-->
+    </div>
+  }
+
+</section>

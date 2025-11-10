@@ -1,0 +1,98 @@
+/*contenedor principal de la pagina de publicacion*/
+.publicacion-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 0 3rem;
+  color: #f1f8e9;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/*encabezado superior con boton volver*/
+.detalle-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  max-width: calc(800px + 2rem);
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+/*boton volver a publicaciones*/
+.volver-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.55rem 1.4rem;
+  border: 1px solid rgba(79, 195, 247, 0.6);
+  background: rgba(9, 45, 24, 0.9);
+  color: #f1f8e9;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+/*hover del boton volver*/
+.volver-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(13, 70, 37, 0.95);
+  border-color: #4fc3f7;
+}
+
+/*mensajes de estado generales*/
+.estado,
+.alerta {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+  max-width: calc(800px + 2rem);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*estado informativo*/
+.estado {
+  background: rgba(79, 195, 247, 0.18);
+  color: #f1f8e9;
+}
+
+/*estado de error*/
+.alerta {
+  background: rgba(255, 107, 107, 0.18);
+  color: #ffe6e6;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+}
+
+/*envoltorio de la tarjeta de publicacion para centrarla*/
+.detalle-card-wrapper {
+  width: 100%;
+  max-width: calc(800px + 2rem);
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+/*responsive para pantallas medianas*/
+@media (max-width: 768px) {
+  .publicacion-page {
+    padding: 1.5rem 0 2.5rem;
+    gap: 1.5rem;
+  }
+}
+
+/*responsive para pantallas chicas*/
+@media (max-width: 530px) {
+  .detalle-header {
+    padding: 0 0.25rem;
+  }
+}
