@@ -9,8 +9,10 @@
 
       <!--muestro el avatar si el usuario tiene imagen-->
       @if (avatarUrl !== '') {
+        <!--contenedor del avatar para manejar skeleton y estado cargado-->
         <div class="avatar-contenedor">
           @if (!avatarCargado) {
+            <!--skeleton mostrado mientras carga la imagen del autor-->
             <div class="avatar-skeleton" aria-hidden="true"></div>
           }
           <img
@@ -29,6 +31,7 @@
       }
       <!--si no tiene imagen muestro las iniciales-->
       @else {
+        <!--avatar alternativo con iniciales del autor-->
         <div class="avatar avatar-placeholder">{{ inicialesAutor() }}</div>
       }
 
@@ -43,14 +46,17 @@
 
     <!--boton eliminar visible solo si la publicacion es del usuario logueado-->
     @if (esPropia) {
-      <button type="button" class="delete-btn" (click)="onEliminar()">Eliminar</button>
+      <!--boton para eliminar la publicacion desde la tarjeta-->
+      <button type="button" class="delete-btn" (click)="onEliminar($event)">Eliminar</button>
     }
   </header>
 
   <!--muestro la imagen principal si existe-->
   @if (imagenUrl !== '') {
+    <!--contenedor de la imagen principal con skeleton de carga-->
     <div class="principal-contenedor">
       @if (!imagenCargada) {
+        <!--skeleton mostrado mientras carga la imagen principal-->
         <div class="principal-skeleton" aria-hidden="true"></div>
       }
       <img
@@ -84,14 +90,14 @@
       type="button"
       class="like-btn"
       [ngClass]="{ liked: tieneLike }"
-      (click)="onToggleLike()"
+      (click)="onToggleLike($event)"
     >
 
       <!--icono que cambia segun si el usuario dio like o no-->
       <span class="icon" aria-hidden="true">
         @if (tieneLike) {
           💚
-        } 
+        }
         @else {
           🤍
         }
@@ -102,47 +108,191 @@
     </button>
   </footer>
 
-  <!--seccion visual de comentarios-->
+  <!--seccion de comentarios asociada a la publicacion-->
   <section class="comentarios">
 
-    <!--encabezado de la seccion comentarios-->
-    <header class="comentarios-header">
-      <!--titulo de la seccion comentarios-->
-      <h3 class="comentarios-titulo">Comentarios</h3>
-      <!--contador con el total de comentarios-->
-      <span class="comentarios-total">{{ listaComentarios.length }}</span>
-    </header>
+    @if (modoDetalle) {
 
-    <!--listado de comentarios existentes-->
-    @if (hayComentarios) {
-      <ul class="comentarios-lista">
+      <!--vista detalle con listado y paginado de comentarios-->
+      <header class="comentarios-header">
+        <h3 class="comentarios-titulo">Comentarios</h3>
+        <!--chip con la cantidad total, mismo estilo que en publicaciones-->
+        <span class="comentarios-total">{{ totalComentarios }}</span>
+      </header>
 
-        <!--recorro la lista de comentarios existentes-->
-        @for (comentario of listaComentarios; track comentario._id) {
-          <li class="comentario-item">
+      <!--estado sin comentarios-->
+      @if (!cargandoComentarios && !hayComentarios) {
+        <p class="estado-comentarios">
+          Todavía no hay comentarios para esta publicación.
+        </p>
+      }
 
-            <!--cabecera de cada comentario con usuario y fecha-->
-            <div class="comentario-header">
-              <strong>@{{ comentario.usuario.userName }}</strong>
-              <span class="comentario-fecha">{{ comentario.createdAt | date: 'd/MM HH:mm' }}</span>
-            </div>
+      <!--lista de comentarios-->
+      @if (hayComentarios) {
+        <ul class="comentarios-lista">
+          <!--recorro la lista de comentarios en modo detalle-->
+          @for (comentario of listaComentarios; track comentario._id) {
+            <li class="comentario-item">
+              <!--encabezado del comentario con usuario, fecha y estado-->
+              <header class="comentario-header">
+                <div class="comentario-info">
+                  <!--nombre de usuario que escribio el comentario-->
+                  <strong>@{{ comentario.usuario.userName }}</strong>
+                  <!--fecha y hora del comentario-->
+                  <span class="comentario-fecha">
+                    {{ comentario.createdAt | date: 'd/MM/yy HH:mm' }}
+                  </span>
+                  @if (comentario.modificado) {
+                    <!--indicador visual de comentario editado-->
+                    <span class="comentario-editado">(editado)</span>
+                  }
+                </div>
 
-            <!--contenido principal del comentario-->
-            <p class="comentario-texto">{{ comentario.contenido }}</p>
-          </li>
-        }
-      </ul>
+                @if (comentarioEsPropio(comentario)) {
+                  <!--acciones disponibles para comentarios propios-->
+                  <div class="comentario-acciones">
+                    @if (comentarioEditandoId === comentario._id) {
+                      <!--acciones visibles mientras edito un comentario-->
+                      <button
+                        type="button"
+                        class="comentario-accion-btn"
+                        (click)="guardarEdicion()"
+                        [disabled]="guardandoEdicion"
+                      >
+                        {{ guardandoEdicion ? 'Guardando...' : 'Guardar' }}
+                      </button>
+                      <button
+                        type="button"
+                        class="comentario-accion-btn secundario"
+                        (click)="cancelarEdicion()"
+                      >
+                        Cancelar
+                      </button>
+                    }
+                    @else {
+                      <!--boton para activar el modo edicion del comentario-->
+                      <button
+                        type="button"
+                        class="comentario-accion-btn"
+                        (click)="activarEdicion(comentario)"
+                      >
+                        Editar
+                      </button>
+                    }
+                  </div>
+                }
+              </header>
+
+              @if (comentarioEditandoId === comentario._id) {
+                <!--area de texto para editar el contenido del comentario-->
+                <textarea
+                  rows="3"
+                  class="comentario-texto comentario-texto-editando"
+                  [(ngModel)]="comentarioEditandoTexto"
+                ></textarea>
+              }
+              @else {
+                <!--texto del comentario en modo solo lectura-->
+                <p class="comentario-texto">{{ comentario.contenido }}</p>
+              }
+            </li>
+          }
+        </ul>
+      }
+
+      <!--estado cargando comentarios-->
+      @if (cargandoComentarios) {
+        <p class="estado-comentarios">Cargando comentarios...</p>
+      }
+
+      <!--boton cargar mas comentarios-->
+      @if (!cargandoComentarios && hayMasComentarios) {
+        <!--boton para traer la siguiente pagina de comentarios-->
+        <button
+          type="button"
+          class="cargar-mas-comentarios-btn"
+          (click)="cargarComentarios()
+        ">
+          Cargar más comentarios
+        </button>
+      }
+
+      <!--formulario para nuevo comentario (AL FINAL)-->
+      <div class="comentario-formulario">
+        <!--etiqueta y textarea para escribir un nuevo comentario-->
+        <label class="comentario-label">
+          <span class="comentario-label-text">Dejá tu comentario</span>
+          <textarea
+            rows="3"
+            placeholder="Contanos tu opinión"
+            [(ngModel)]="nuevoComentario"
+          ></textarea>
+        </label>
+        <!--boton que publica el nuevo comentario-->
+        <button
+          type="button"
+          class="comentario-enviar-btn"
+          (click)="enviarComentario()
+          "
+          [disabled]="nuevoComentario.trim() === '' || enviandoComentario"
+        >
+          {{ enviandoComentario ? 'Enviando...' : 'Publicar comentario' }}
+        </button>
+      </div>
+
     }
-
-    <!--mensaje mostrado cuando no hay comentarios-->
     @else {
-      <p class="sin-comentarios">Todavia no hay comentarios para esta publicacion.</p>
+
+      <!--vista compacta usada en listados (publicaciones, mi perfil)-->
+      @if (hayComentarios) {
+        <header class="comentarios-header">
+          <h3 class="comentarios-titulo">Comentarios</h3>
+          <!--cantidad total de comentarios que tiene la publicación-->
+          <span class="comentarios-total">{{ totalComentariosCompactos }}</span>
+        </header>
+
+        <ul class="comentarios-lista">
+          <!--ultimos comentarios mostrados en modo compacto-->
+          @for (comentario of listaComentarios; track comentario._id) {
+            <li
+              class="comentario-item comentario-item-compacto"
+              role="button"
+              tabindex="0"
+              (click)="irAlDetalle($event)"
+              (keydown.enter)="irAlDetalle($event)"
+            >
+              <!--encabezado compacto del comentario con usuario y fecha-->
+              <div class="comentario-header">
+                <strong>@{{ comentario.usuario.userName }}</strong>
+                <span class="comentario-fecha">
+                  {{ comentario.createdAt | date: 'd/MM HH:mm' }}
+                </span>
+              </div>
+              <!--contenido del comentario en vista resumida-->
+              <p class="comentario-texto">{{ comentario.contenido }}</p>
+            </li>
+          }
+        </ul>
+
+        <!--texto guia para invitar a abrir el detalle de la publicacion-->
+        <p class="comentarios-resumen" (click)="irAlDetalle($event)">
+          Abrí la publicación para ver todos los comentarios y sumar el tuyo.
+        </p>
+      }
+      @else {
+        @if (cargandoComentariosCompactos) {
+          <!--estado de carga en vista compacta-->
+          <p class="comentarios-vacio">Cargando comentarios...</p>
+        }
+        @else {
+          <!--estado sin comentarios en vista compacta-->
+          <p class="comentarios-vacio">
+            Esta publicación aún no tiene comentarios.
+          </p>
+        }
+      }
     }
 
-    <!--placeholder informativo hasta implementar el formulario-->
-    <div class="comentarios-pendiente">
-      <p>Muy pronto vas a poder sumar tu comentario desde esta seccion.</p>
-    </div>
   </section>
 
 </article>
