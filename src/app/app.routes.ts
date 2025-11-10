@@ -20,6 +20,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/publicaciones/publicaciones').then((m) => m.Publicaciones)
   },
   {
+    path: 'publicaciones/:id',
+    loadComponent: () => import('./pages/publicacion/publicacion').then((m) => m.PublicacionDetalle)
+  },
+  {
     path: 'mi-perfil',
     loadComponent: () => import('./pages/mi-perfil/mi-perfil').then((m) => m.MiPerfil)
   },
