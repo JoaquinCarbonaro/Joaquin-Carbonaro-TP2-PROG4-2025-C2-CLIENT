@@ -147,15 +147,22 @@
   <section class="grid">
     <!--recorro la lista de publicaciones y pinto cada tarjeta-->
     @for (publicacion of publicaciones; track publicacion._id) {
-      <!--componente tarjeta de publicacion con inputs y eventos de interaccion-->
-      <app-publicacion-card
-        [publicacion]="publicacion"
-        [usuarioActualId]="usuarioActualId"
-        [baseUrl]="baseUrl"
-        (like)="onDarLike($event)"
-        (unlike)="onQuitarLike($event)"
-        (eliminar)="onEliminar($event)"
-      />
+      <a
+        class="publicacion-link"
+        [routerLink]="['/publicaciones', publicacion._id]"
+        aria-label="ver publicacion"
+      >
+        <!--componente tarjeta de publicacion con inputs y eventos de interaccion-->
+        <app-publicacion-card
+          [publicacion]="publicacion"
+          [usuarioActualId]="usuarioActualId"
+          [baseUrl]="baseUrl"
+          [modoDetalle]="false"
+          (like)="onDarLike($event)"
+          (unlike)="onQuitarLike($event)"
+          (eliminar)="onEliminar($event)"
+        />
+      </a>
     }
   </section>
 

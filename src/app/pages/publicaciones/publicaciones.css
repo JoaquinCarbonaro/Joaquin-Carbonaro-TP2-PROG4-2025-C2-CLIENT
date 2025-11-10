@@ -6,7 +6,6 @@
   gap: 2rem;
   padding: 2rem 0 3rem;
   color: #f1f8e9;
-  /*limito el ancho para alinear con el layout principal*/
   max-width: 1100px;
   width: 100%;
   margin: 0 auto;
@@ -225,6 +224,12 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.publicacion-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 /*mensaje de carga mientras traigo publicaciones*/

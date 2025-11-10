@@ -7,13 +7,14 @@ import { PublicacionCardComponent } from '../../components/publicacion-card/publ
 import { mostrarSwal } from '../../utils/swal'
 import { environment } from '../../../environments/environment'
 import { Auth } from '../../services/auth'
+import { RouterLink } from '@angular/router'
 
 @Component({
   standalone: true,
   selector: 'app-publicaciones-page',
   templateUrl: './publicaciones.html',
   styleUrl: './publicaciones.css',
-  imports: [CommonModule, NgClass, ReactiveFormsModule, PublicacionCardComponent]
+  imports: [CommonModule, NgClass, ReactiveFormsModule, PublicacionCardComponent, RouterLink]
 })
 export class Publicaciones implements OnInit {
 
