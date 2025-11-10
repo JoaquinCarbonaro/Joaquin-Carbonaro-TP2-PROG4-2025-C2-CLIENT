@@ -4,11 +4,20 @@ import { Observable, map } from 'rxjs'
 import { environment } from '../../environments/environment'
 import { Auth } from './auth'
 import { Publicacion, PublicacionesPaginadas } from '../models/publicacion'
-import { Comentario } from '../models/comentario'
+import { Comentario, ComentariosPaginados } from '../models/comentario'
 
 //estructura posible de respuesta del backend al listar publicaciones
 interface ListarPublicacionesRespuesta {
   publicaciones?: any[]
+  data?: any[]
+  total?: number
+  count?: number
+  hasMore?: boolean
+}
+
+//posible forma de respuesta del backend al listar comentarios
+interface ListarComentariosRespuesta {
+  comentarios?: any[]
   data?: any[]
   total?: number
   count?: number
@@ -80,6 +89,68 @@ export class PublicacionesService {
           return { publicaciones, total, hasMore }
         })
       )
+  }
+
+  //obtengo el detalle de una publicacion especifica
+  obtenerPublicacion(publicacionId: string): Observable<Publicacion> {
+    const headers = this.obtenerHeaders('json')
+
+    return this.http
+      .get<any>(`${environment.apiBaseUrl}/publicaciones/${publicacionId}`, {
+        headers
+      })
+      .pipe(map((respuesta) => this.mapearPublicacion(respuesta)))
+  }
+
+  //traigo los comentarios de una publicacion con paginado simple
+  listarComentarios(
+    publicacionId: string,
+    skip: number,
+    limit: number
+  ): Observable<ComentariosPaginados> {
+    const headers = this.obtenerHeaders('json')
+    var params = new HttpParams()
+      .set('skip', (Number.isFinite(skip) && skip >= 0 ? Math.floor(skip) : 0).toString())
+      .set('limit', (Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 3).toString())
+
+    return this.http
+      .get<ListarComentariosRespuesta>(
+        `${environment.apiBaseUrl}/publicaciones/${publicacionId}/comentarios`,
+        { headers, params }
+      )
+      .pipe(map((respuesta) => this.mapearComentariosPaginados(respuesta)))
+  }
+
+  //agrego un nuevo comentario a la publicacion
+  crearComentario(publicacionId: string, contenido: string): Observable<Comentario> {
+    const headers = this.obtenerHeaders('json')
+    const body = { contenido }
+
+    return this.http
+      .post<any>(
+        `${environment.apiBaseUrl}/publicaciones/${publicacionId}/comentarios`,
+        body,
+        { headers }
+      )
+      .pipe(map((respuesta) => this.mapearComentario(respuesta)))
+  }
+
+  //edito un comentario existente
+  editarComentario(
+    publicacionId: string,
+    comentarioId: string,
+    contenido: string
+  ): Observable<Comentario> {
+    const headers = this.obtenerHeaders('json')
+    const body = { contenido }
+
+    return this.http
+      .put<any>(
+        `${environment.apiBaseUrl}/publicaciones/${publicacionId}/comentarios/${comentarioId}`,
+        body,
+        { headers }
+      )
+      .pipe(map((respuesta) => this.mapearComentario(respuesta)))
   }
 
   //creo una nueva publicacion con o sin imagen
@@ -227,11 +298,30 @@ export class PublicacionesService {
       _id: data?._id ?? data?.id ?? '',
       contenido: data?.contenido ?? data?.mensaje ?? '',
       createdAt: data?.createdAt ?? data?.fecha ?? new Date().toISOString(),
+      updatedAt: data?.updatedAt ?? data?.modificadoEn ?? data?.fecha ?? undefined,
+      modificado: data?.modificado === true,
       usuario: {
         _id: usuario?._id ?? usuario?.id ?? usuario?.uuid ?? '',
         userName: usuario?.userName ?? usuario?.nombre ?? '',
-        imagenPerfil: usuario?.imagenPerfil ?? usuario?.avatar ?? undefined
+        imagenPerfil: usuario?.imagenPerfil ?? usuario?.avatar ?? undefined,
+        uuid: usuario?.uuid ?? undefined
       }
     }
+  }
+
+  //normalizo la respuesta paginada de comentarios
+  private mapearComentariosPaginados(
+    respuesta: ListarComentariosRespuesta
+  ): ComentariosPaginados {
+    const origen = respuesta?.comentarios ?? respuesta?.data ?? []
+    const comentarios = origen.map((item: any) => this.mapearComentario(item))
+    const totalRemoto =
+      typeof respuesta?.total === 'number' ? respuesta.total : respuesta?.count
+    const total =
+      typeof totalRemoto === 'number' ? totalRemoto : comentarios.length
+    const hasMore =
+      respuesta?.hasMore ?? comentarios.length < total
+
+    return { comentarios, total, hasMore }
   }
 }
