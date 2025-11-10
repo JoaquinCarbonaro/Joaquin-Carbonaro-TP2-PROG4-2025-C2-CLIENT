@@ -237,9 +237,18 @@
   flex-direction: column;
   gap: 2rem;
   width: 100%;
-  max-width: 800px;
+  max-width: calc(800px + 2rem);
   margin: 0 auto;
+  padding: 0 1rem;
   box-sizing: border-box;
+  align-self: stretch;
+}
+
+/*enlaces que envuelven cada tarjeta de publicacion*/
+.publicacion-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 /*contenedor del boton cargar mas para mantenerlo centrado*/

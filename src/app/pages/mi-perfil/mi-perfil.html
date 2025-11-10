@@ -105,15 +105,22 @@
         <div class="lista-publicaciones">
           <!--recorro cada publicacion y muestro su tarjeta-->
           @for (publicacion of ultimas; track publicacion._id) {
-            <!--componente reutilizable de publicacion-->
-            <app-publicacion-card
-              [publicacion]="publicacion"
-              [usuarioActualId]="usuarioActualId"
-              [baseUrl]="baseUrl"
-              (like)="onDarLike($event)"
-              (unlike)="onQuitarLike($event)"
-              (eliminar)="onEliminar($event)"
-            />
+            <a
+              class="publicacion-link"
+              [routerLink]="['/publicaciones', publicacion._id]"
+              aria-label="ver publicacion"
+            >
+              <!--componente reutilizable de publicacion-->
+              <app-publicacion-card
+                [publicacion]="publicacion"
+                [usuarioActualId]="usuarioActualId"
+                [baseUrl]="baseUrl"
+                [modoDetalle]="false"
+                (like)="onDarLike($event)"
+                (unlike)="onQuitarLike($event)"
+                (eliminar)="onEliminar($event)"
+              />
+            </a>
           }
         </div>
 

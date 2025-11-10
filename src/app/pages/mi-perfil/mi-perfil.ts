@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms'
+import { RouterLink } from '@angular/router'
 import { PerfilService } from '../../services/perfil'
 import { Perfil } from '../../models/perfil'
 import { Publicacion } from '../../models/publicacion'
@@ -26,7 +27,7 @@ import {
   selector: 'app-mi-perfil-page',
   templateUrl: './mi-perfil.html',
   styleUrl: './mi-perfil.css',
-  imports: [CommonModule, ReactiveFormsModule, PublicacionCardComponent]
+  imports: [CommonModule, ReactiveFormsModule, PublicacionCardComponent, RouterLink]
 })
 export class MiPerfil implements OnInit, OnDestroy {
 
