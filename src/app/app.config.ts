@@ -1,21 +1,21 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core'
-import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import { provideRouter } from '@angular/router'
-
 import { routes } from './app.routes'
+import { authInterceptor } from './interceptors/auth.interceptor'
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    //captura errores globales del navegador
+    //capturo errores globales del navegador
     provideBrowserGlobalErrorListeners(),
 
-    //mejora el rendimiento de deteccion de cambios
+    //mejoro el rendimiento de deteccion de cambios con coalescencia de eventos
     provideZoneChangeDetection({ eventCoalescing: true }),
 
-    //habilita el sistema de enrutamiento con las rutas definidas
+    //activo el sistema de enrutamiento usando las rutas definidas
     provideRouter(routes),
 
-    //habilita el cliente http para peticiones al backend
-    provideHttpClient()
+    //activo el cliente http con el interceptor de autenticacion
+    provideHttpClient(withInterceptors([authInterceptor]))
   ]
 }
