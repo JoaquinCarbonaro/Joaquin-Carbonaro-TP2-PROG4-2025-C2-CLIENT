@@ -1,1 +1,16 @@
-<p>cargando works!</p>
+<section class="loading-wrapper">
+  <!--logo principal de rumbo criollo-->
+  <img
+    class="brand-logo"
+    src="../assets/images/logo_con_nombre.png"
+    alt="Rumbo Criollo"
+  />
+
+  <!--tarjeta que contiene el spinner y el mensaje de carga-->
+  <div class="loading-card">
+    <!--spinner animado de carga-->
+    <div class="loading-spinner" role="status" aria-label="Cargando"></div>
+    <!--texto que muestra el mensaje dinamico-->
+    <p class="loading-text">{{ mensaje }}</p>
+  </div>
+</section>
