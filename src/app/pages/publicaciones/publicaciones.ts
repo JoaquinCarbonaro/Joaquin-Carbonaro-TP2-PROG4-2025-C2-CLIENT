@@ -116,6 +116,16 @@ export class Publicaciones implements OnInit {
           this.imagenSeleccionada = null
           this.nombreImagen = ''
 
+          //cierro el formulario de crear publicacion reseteando el checkbox visual
+          if (typeof document !== 'undefined') {
+            const toggleCheckbox = document.getElementById(
+              'toggle-crear-publicacion'
+            ) as HTMLInputElement | null
+            if (toggleCheckbox) {
+              toggleCheckbox.checked = false
+            }
+          }
+
           //informo al usuario que la publicacion fue creada
           mostrarSwal(
             'publicacion creada',
