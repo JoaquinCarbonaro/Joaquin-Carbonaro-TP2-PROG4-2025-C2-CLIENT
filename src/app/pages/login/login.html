@@ -33,12 +33,6 @@
         }
       </label>
 
-      <!--opcion para mantener la sesion activa-->
-      <label class="remember">
-        <input type="checkbox" formControlName="remember" />
-        <span>Mantener sesión activa</span>
-      </label>
-
       <!--mensaje de error del servidor-->
       @if (serverError) {
         <div class="server-error">{{ serverError }}</div>

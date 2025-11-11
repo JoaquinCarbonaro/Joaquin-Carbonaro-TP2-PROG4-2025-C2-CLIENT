@@ -29,8 +29,7 @@ export class Login {
   //formulario reactivo del login
   protected readonly loginForm = this.fb.nonNullable.group({
     identifier: ['', Validators.required],
-    password: ['', [Validators.required, Validators.pattern(this.passwordPattern)]],
-    remember: [false]
+    password: ['', [Validators.required, Validators.pattern(this.passwordPattern)]]
   });
 
   //mensaje de error del servidor
@@ -82,11 +81,11 @@ export class Login {
 
   //login directo para agilizar pruebas
   protected iniciarSesionRapida(perfil: 'admin' | 'user'): void {
-    const credenciales = perfil === 'admin' ? this.credencialesRapidas.admin : this.credencialesRapidas.user;
+    const credenciales =
+      perfil === 'admin' ? this.credencialesRapidas.admin : this.credencialesRapidas.user;
     this.loginForm.patchValue({
       identifier: credenciales.identifier,
-      password: credenciales.password,
-      remember: true
+      password: credenciales.password
     });
     this.submit();
   }
@@ -94,7 +93,8 @@ export class Login {
   //arma un mensaje legible segun la respuesta
   private obtenerMensajeError(error: unknown): string {
     if (error instanceof HttpErrorResponse) {
-      const mensajeDirecto = typeof error.error === 'string' ? error.error : error.error?.message;
+      const mensajeDirecto =
+        typeof error.error === 'string' ? error.error : error.error?.message;
       if (mensajeDirecto) {
         return mensajeDirecto;
       }
