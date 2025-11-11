@@ -6,15 +6,13 @@ export const environment = {
   //url base del backend nest local
   apiBaseUrl: 'http://localhost:3000',
 
-  //por ahora false
-  useCookies: false,
-
-  //tiempo antes de expirar token para avisar
-  tokenWarningMs: 60000,
+  //tiempo de vida del token: 15 minutos -> SERVER/src/auth/auth.module.ts
+  //tiempo en el que avisa, antes de expirar el token 
+  tokenWarningMs: 300000, //300.000 milisegundos = 5 minutos
 
   //usuarios predefinidos para accesos rapidos
   quickLogins: {
-    //credenciales de administrador
+    //credenciales de usuario administrador
     admin: {
       identifier: 'admin@rumbo.com',
       password: 'RumboAdmin123'
