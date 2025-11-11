@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core'
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { Observable, map } from 'rxjs'
 import { environment } from '../../environments/environment'
-import { Auth } from './auth'
 import { Publicacion, PublicacionesPaginadas } from '../models/publicacion'
 import { Comentario, ComentariosPaginados } from '../models/comentario'
 
@@ -30,8 +29,6 @@ interface ListarComentariosRespuesta {
 export class PublicacionesService {
   //inyecto httpclient para hacer peticiones http
   private readonly http = inject(HttpClient)
-  //inyecto el servicio de autenticacion para obtener el token del usuario logueado
-  private readonly auth = inject(Auth)
 
   //listo publicaciones con paginacion, orden y filtro opcional por autor
   listarPublicaciones(
@@ -40,8 +37,6 @@ export class PublicacionesService {
     orden: 'recientes' | 'likes',
     autorUuid?: string | null
   ): Observable<PublicacionesPaginadas> {
-    //armo headers con el token y tipo de contenido
-    const headers = this.obtenerHeaders('json')
     //convierto el tipo de orden al valor esperado por el backend
     const ordenReal = orden === 'recientes' ? 'createdAt' : 'likes'
     //normalizo el offset para evitar valores invalidos
@@ -63,7 +58,7 @@ export class PublicacionesService {
     return this.http
       .get<ListarPublicacionesRespuesta>(
         `${environment.apiBaseUrl}/publicaciones`,
-        { headers, params }
+        { params }
       )
       .pipe(
         map((response) => {
@@ -93,12 +88,8 @@ export class PublicacionesService {
 
   //obtengo el detalle de una publicacion especifica
   obtenerPublicacion(publicacionId: string): Observable<Publicacion> {
-    const headers = this.obtenerHeaders('json')
-
     return this.http
-      .get<any>(`${environment.apiBaseUrl}/publicaciones/${publicacionId}`, {
-        headers
-      })
+      .get<any>(`${environment.apiBaseUrl}/publicaciones/${publicacionId}`)
       .pipe(map((respuesta) => this.mapearPublicacion(respuesta)))
   }
 
@@ -108,7 +99,6 @@ export class PublicacionesService {
     skip: number,
     limit: number
   ): Observable<ComentariosPaginados> {
-    const headers = this.obtenerHeaders('json')
     var params = new HttpParams()
       .set('skip', (Number.isFinite(skip) && skip >= 0 ? Math.floor(skip) : 0).toString())
       .set('limit', (Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 3).toString())
@@ -116,21 +106,19 @@ export class PublicacionesService {
     return this.http
       .get<ListarComentariosRespuesta>(
         `${environment.apiBaseUrl}/publicaciones/${publicacionId}/comentarios`,
-        { headers, params }
+        { params }
       )
       .pipe(map((respuesta) => this.mapearComentariosPaginados(respuesta)))
   }
 
   //agrego un nuevo comentario a la publicacion
   crearComentario(publicacionId: string, contenido: string): Observable<Comentario> {
-    const headers = this.obtenerHeaders('json')
     const body = { contenido }
 
     return this.http
       .post<any>(
         `${environment.apiBaseUrl}/publicaciones/${publicacionId}/comentarios`,
-        body,
-        { headers }
+        body
       )
       .pipe(map((respuesta) => this.mapearComentario(respuesta)))
   }
@@ -141,14 +129,12 @@ export class PublicacionesService {
     comentarioId: string,
     contenido: string
   ): Observable<Comentario> {
-    const headers = this.obtenerHeaders('json')
     const body = { contenido }
 
     return this.http
       .put<any>(
         `${environment.apiBaseUrl}/publicaciones/${publicacionId}/comentarios/${comentarioId}`,
-        body,
-        { headers }
+        body
       )
       .pipe(map((respuesta) => this.mapearComentario(respuesta)))
   }
@@ -168,70 +154,39 @@ export class PublicacionesService {
       formData.append('imagen', datos.imagen, datos.imagen.name)
     }
 
-    //obtengo headers con token sin content-type (lo maneja formdata)
-    const headers = this.obtenerHeaders('multipart')
-
-    //hago la peticion post al backend y mapeo la respuesta a publicacion
+    //no defino content-type, lo resuelve el navegador con boundary del formdata
     return this.http
       .post<any>(
         `${environment.apiBaseUrl}/publicaciones`,
-        formData,
-        { headers }
+        formData
       )
       .pipe(map((respuesta) => this.mapearPublicacion(respuesta)))
   }
 
   //agrego un me gusta a una publicacion
   darLike(publicacionId: string): Observable<Publicacion> {
-    //armo headers para enviar el token
-    const headers = this.obtenerHeaders('json')
-    //hago post al endpoint de me gusta y mapeo la publicacion actualizada
     return this.http
       .post<any>(
         `${environment.apiBaseUrl}/publicaciones/${publicacionId}/me-gusta`,
-        {},
-        { headers }
+        {}
       )
       .pipe(map((respuesta) => this.mapearPublicacion(respuesta)))
   }
 
   //quito un me gusta de una publicacion
   quitarLike(publicacionId: string): Observable<Publicacion> {
-    //armo headers para enviar el token
-    const headers = this.obtenerHeaders('json')
-    //hago delete al endpoint de me gusta y mapeo la publicacion actualizada
     return this.http
       .delete<any>(
-        `${environment.apiBaseUrl}/publicaciones/${publicacionId}/me-gusta`,
-        { headers }
+        `${environment.apiBaseUrl}/publicaciones/${publicacionId}/me-gusta`
       )
       .pipe(map((respuesta) => this.mapearPublicacion(respuesta)))
   }
 
   //elimino una publicacion propia del backend
   eliminarPublicacion(publicacionId: string): Observable<void> {
-    //armo headers para enviar el token
-    const headers = this.obtenerHeaders('json')
-    //hago delete al endpoint de la publicacion
     return this.http.delete<void>(
-      `${environment.apiBaseUrl}/publicaciones/${publicacionId}`,
-      { headers }
+      `${environment.apiBaseUrl}/publicaciones/${publicacionId}`
     )
-  }
-
-  //genero los headers segun el tipo de contenido y el token
-  private obtenerHeaders(tipo: 'json' | 'multipart'): Record<string, string> {
-    const headers: Record<string, string> = {}
-    //si el tipo es json agrego el content-type
-    if (tipo === 'json') {
-      headers['Content-Type'] = 'application/json'
-    }
-    //si existe token de usuario lo agrego en el header authorization
-    const token = this.auth.obtenerToken()
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
-    return headers
   }
 
   //transformo la estructura del backend al modelo publicacion del front

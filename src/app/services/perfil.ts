@@ -1,8 +1,7 @@
-import { Injectable, inject } from '@angular/core' 
-import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { Injectable, inject } from '@angular/core'
+import { HttpClient } from '@angular/common/http'
 import { Observable, BehaviorSubject, map } from 'rxjs'
 import { environment } from '../../environments/environment'
-import { Auth } from './auth'
 import { Perfil } from '../models/perfil'
 import { Publicacion } from '../models/publicacion'
 import { Comentario } from '../models/comentario'
@@ -30,8 +29,6 @@ interface PerfilActualizacion {
 export class PerfilService {
   //inyecto httpclient para hacer peticiones http al backend
   private readonly http = inject(HttpClient)
-  //inyecto el servicio de autenticacion para obtener el token guardado
-  private readonly auth = inject(Auth)
 
   //estado reactivo del perfil actual disponible para el resto de la aplicacion
   private readonly perfilActualSubject = new BehaviorSubject<Perfil | null>(null)
@@ -40,11 +37,10 @@ export class PerfilService {
 
   //obtengo el perfil del usuario autenticado junto con sus publicaciones
   obtenerPerfil(): Observable<{ usuario: Perfil; publicaciones: Publicacion[] }> {
-    //obtengo los headers con token
-    const headers = this.obtenerHeaders()
     //realizo la peticion get a la ruta del backend que devuelve el perfil
+    //el interceptor se encarga de agregar el token en el header authorization
     return this.http
-      .get<PerfilApiRespuesta>(`${environment.apiBaseUrl}/usuarios/mi-perfil`, { headers })
+      .get<PerfilApiRespuesta>(`${environment.apiBaseUrl}/usuarios/mi-perfil`)
       .pipe(
         map((respuesta) => {
           //mapeo el usuario recibido al modelo perfil del front
@@ -76,11 +72,10 @@ export class PerfilService {
       formData.append('imagenPerfil', datos.imagenPerfil)
     }
 
-    //obtengo headers preparados para enviar formdata con token
-    const headers = this.obtenerHeadersFormulario()
-
+    //no defino content-type ni headers manuales
+    //angular configurara el multipart/form-data y el interceptor agregara el token
     return this.http
-      .put<any>(`${environment.apiBaseUrl}/usuarios/mi-perfil`, formData, { headers })
+      .put<any>(`${environment.apiBaseUrl}/usuarios/mi-perfil`, formData)
       .pipe(
         map((respuesta) => {
           //tomo el usuario de la respuesta contemplando posibles formatos
@@ -93,32 +88,6 @@ export class PerfilService {
           return perfil
         })
       )
-  }
-
-  //armo los headers con el token jwt para autorizar la peticion
-  private obtenerHeaders(): Record<string, string> {
-    //inicio el objeto de headers con content-type json
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    //obtengo el token guardado en el servicio de autenticacion
-    const token = this.auth.obtenerToken()
-    //si tengo token lo agrego al header de autorizacion
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
-    return headers
-  }
-
-  //arma headers para peticiones con formdata incluyendo el token
-  private obtenerHeadersFormulario(): HttpHeaders {
-    //inicio headers vacios para que angular maneje content-type de formdata
-    var headers = new HttpHeaders()
-    //obtengo el token actual
-    const token = this.auth.obtenerToken()
-    //si existe token lo agrego en el header de autorizacion
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`)
-    }
-    return headers
   }
 
   //transformo los datos del backend al modelo perfil usado en el front
