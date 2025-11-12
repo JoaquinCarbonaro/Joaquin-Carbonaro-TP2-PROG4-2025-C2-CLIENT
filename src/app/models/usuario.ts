@@ -1,3 +1,4 @@
+//representa toda la informacion completa del usuario registrada en la base de datos
 export class Usuario {
   _id!: string
   nombre!: string
@@ -17,3 +18,9 @@ export class Usuario {
     Object.assign(this, init)
   }
 }
+
+//Se usa para:
+//Autenticacion (login, registro)
+//Listado de usuarios (en el panel admin)
+//Relacion con publicaciones o comentarios
+//Lógica de permisos (por el campo perfil)

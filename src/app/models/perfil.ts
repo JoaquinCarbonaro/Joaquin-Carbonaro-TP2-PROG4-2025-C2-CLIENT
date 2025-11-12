@@ -1,3 +1,4 @@
+//vista resumida del usuario, enfocada en mostrar informacion publica o limitada
 export class Perfil {
   uuid!: string
   nombre!: string
@@ -14,3 +15,8 @@ export class Perfil {
     Object.assign(this, init)
   }
 }
+
+//Se usa para:
+//Pagina “Mi perfil” y perfiles de otros usuarios
+//Mostrar avatar, nombre, descripción y publicaciones
+//Vincular un autor dentro de una publicacion o comentario (sin exponer todo el usuario)
