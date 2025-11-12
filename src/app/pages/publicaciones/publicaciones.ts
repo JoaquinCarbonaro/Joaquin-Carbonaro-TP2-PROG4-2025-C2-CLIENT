@@ -47,6 +47,8 @@ export class Publicaciones implements OnInit {
   protected readonly baseUrl = environment.apiBaseUrl
   //uuid del usuario actual obtenido del servicio de autenticacion
   protected readonly usuarioActualId = this.authService.obtenerIdUsuario()
+  //indica si el usuario actual tiene perfil administrador
+  protected readonly usuarioEsAdmin = this.authService.esUsuarioAdmin()
   //formulario reactivo para crear nuevas publicaciones
   protected readonly formulario = this.formBuilder.group({
     titulo: ['', [Validators.required, Validators.minLength(3)]],
@@ -222,7 +224,7 @@ export class Publicaciones implements OnInit {
         this.programarRecarga(this.paginaActual)
         mostrarSwal(
           'publicacion eliminada',
-          'tu publicacion ya no aparece en el listado',
+          'la publicacion ya no aparece en el listado',
           'success'
         )
       },
