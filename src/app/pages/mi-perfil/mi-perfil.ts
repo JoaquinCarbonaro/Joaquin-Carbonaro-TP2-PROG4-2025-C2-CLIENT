@@ -56,6 +56,8 @@ export class MiPerfil implements OnInit, OnDestroy {
   protected readonly placeholderPerfil = this.calcularPlaceholder()
   //uuid del usuario actual obtenido desde el servicio de autenticacion
   protected readonly usuarioActualId = this.authService.obtenerIdUsuario()
+  //indica si el usuario actual posee perfil administrador
+  protected readonly usuarioEsAdmin = this.authService.esUsuarioAdmin()
   //cantidad total de publicaciones del usuario segun el backend
   protected totalPublicaciones = 0
   //cantidad de publicaciones ya solicitadas al backend
@@ -334,7 +336,7 @@ export class MiPerfil implements OnInit, OnDestroy {
         //informo al usuario que la publicacion fue eliminada
         mostrarSwal(
           'publicacion eliminada',
-          'tu publicacion ya no aparece en el listado',
+          'la publicacion ya no aparece en el listado',
           'success'
         )
         //verifico si aun faltan publicaciones por traer desde el servidor
