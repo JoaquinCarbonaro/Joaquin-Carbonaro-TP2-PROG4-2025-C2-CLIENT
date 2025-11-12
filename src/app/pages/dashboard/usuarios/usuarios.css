@@ -1,0 +1,388 @@
+/*layout principal del panel de usuarios administradores*/
+.usuarios-admin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 0 3rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*tarjetas principales: lista, detalle y formulario*/
+.usuarios-admin__lista,
+.usuarios-admin__detalle,
+.usuarios-admin__form {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(27, 94, 32, 0.15);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 900px; /*evito que se ensanche*/
+  min-width: 900px; /*evito que se encoja*/
+  min-height: 320px; /*mantengo altura constante*/
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/*tipografia y colores similares a publicaciones*/
+.usuarios-admin__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1b5e20;
+}
+.usuarios-admin__estado {
+  margin: 0.5rem 0;
+  font-weight: 600;
+  color: #2e7d32;
+}
+.usuarios-admin__detalle {
+  color: #0b3a10;
+}
+.usuarios-admin__detalle strong {
+  font-weight: 600;
+}
+
+/*encabezado de la seccion con acciones superiores*/
+.usuarios-admin__encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.usuarios-admin__acciones-top {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/*envoltorio de la tabla scrollable*/
+.usuarios-admin__tabla-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: auto;
+  border: 1px solid rgba(27, 94, 32, 0.12);
+  max-height: 420px;
+  flex: 1; /*uso el espacio restante*/
+}
+
+/*tabla base de usuarios*/
+.table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+}
+
+/*cabecera de la tabla fija*/
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: #eef6e6;
+  color: #0b3a10;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(27, 94, 32, 0.15);
+  z-index: 1;
+}
+
+/*celdas y filas generales*/
+.table th,
+.table td {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid rgba(27, 94, 32, 0.08);
+  vertical-align: middle;
+  color: #0b3a10;
+  word-break: break-word;
+}
+
+/*efecto hover en filas*/
+.table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+.table tbody tr:hover {
+  background: rgba(79, 195, 247, 0.12);
+}
+.table tbody tr.table-active {
+  background: rgba(249, 168, 37, 0.18);
+}
+
+/*columna de acciones en la tabla*/
+.col-acciones {
+  width: 150px;
+  text-align: right;
+}
+.acciones-celda {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/*botones iconicos dentro de las acciones*/
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+/*boton de baja logica con estilo rojo*/
+.btn-danger-ghost {
+  background: #ffecec;
+  color: #b71c1c;
+  border-color: #ffb3b3;
+}
+
+/*boton de alta logica con estilo verde*/
+.btn-success-ghost {
+  background: #e7f6ea;
+  color: #1b5e20;
+  border-color: #a8d5b1;
+}
+
+/*estilo para botones deshabilitados*/
+.btn-danger-ghost:disabled,
+.btn-success-ghost:disabled {
+  opacity: 0.5;
+}
+
+/*etiquetas tipo badge de estado*/
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/*badge verde activo*/
+.bg-success {
+  background: #1b5e20;
+  color: #f1f8e9;
+}
+
+/*badge rojo inactivo*/
+.bg-danger {
+  background: #b71c1c;
+  color: #fff;
+}
+
+/*cabecera de las secciones detalle o formulario*/
+.usuarios-admin__detalle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/*lista de detalles con altura fija*/
+.usuarios-admin__detalle-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+  word-break: break-word;
+  overflow-y: auto;
+  flex: 1;
+}
+.usuarios-admin__detalle-lista li {
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+
+/*formulario de creacion/edicion de usuarios*/
+.usuarios-admin__form .form-label {
+  font-weight: 600;
+  color: #0b3a10;
+}
+.usuarios-admin__form .form-control,
+.usuarios-admin__form .form-check-input {
+  border-radius: 12px;
+  border: 1px solid rgba(79, 195, 247, 0.75);
+  background: rgba(241, 248, 233, 0.97);
+  color: #1b5e20;
+}
+.usuarios-admin__form .form-control:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.35);
+  border-color: #4fc3f7;
+}
+
+/*grupo de radios en formato de chips*/
+.radio-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.radio-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(79, 195, 247, 0.75);
+  background: rgba(241, 248, 233, 0.97);
+  color: #1b5e20;
+  font-weight: 600;
+}
+.radio-chip input {
+  accent-color: #1b5e20;
+}
+.radio-chip:has(input:checked) {
+  background: #f9a825;
+  border-color: #fb8c00;
+  color: #1b5e20;
+}
+
+/*botones generales*/
+.btn {
+  font-weight: 700;
+  border-radius: 999px;
+}
+
+/*boton principal con degradado naranja*/
+.btn-primary {
+  background: linear-gradient(135deg, #f9a825, #fb8c00);
+  border: 1px solid #fb8c00;
+  color: #1b5e20;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+/*boton secundario celeste*/
+.btn-secondary {
+  background: #4fc3f7;
+  border: 1px solid #4fc3f7;
+  color: #1b5e20;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+/*estilos para botones deshabilitados*/
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.7;
+  box-shadow: none;
+}
+
+/*contenedor de acciones dentro del formulario*/
+.acciones-form {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/*scrollbars personalizados en la tabla*/
+.usuarios-admin__tabla-wrap::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.usuarios-admin__tabla-wrap::-webkit-scrollbar-thumb {
+  background: rgba(27, 94, 32, 0.35);
+  border-radius: 8px;
+}
+.usuarios-admin__tabla-wrap::-webkit-scrollbar-track {
+  background: rgba(27, 94, 32, 0.08);
+}
+
+/*grupo de opciones de perfil visualmente como checkboxes*/
+.perfil-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/*contenedor clickeable para cada opcion de perfil*/
+.check-option {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  color: #0b3a10;
+}
+
+/*oculto el radio original para personalizar*/
+.check-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*cuadrado visual del checkbox*/
+.check-option .box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #1b5e20;
+  border-radius: 4px;
+  background: rgba(241, 248, 233, .97);
+  display: inline-block;
+  position: relative;
+  transition: box-shadow .15s ease, background-color .15s ease, border-color .15s ease;
+}
+
+/*tilde visible cuando el input esta seleccionado*/
+.check-option input:checked + .box::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 12px;
+  border: 3px solid #1b5e20;
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg);
+}
+
+/*efecto hover y focus para accesibilidad*/
+.check-option:hover .box {
+  box-shadow: 0 0 0 3px rgba(79, 195, 247, .35);
+  border-color: #4fc3f7;
+}
+.check-option input:focus-visible + .box {
+  box-shadow: 0 0 0 3px rgba(79, 195, 247, .5);
+}
+
+/*texto visible junto al checkbox*/
+.check-option .label {
+  line-height: 1;
+}
+
+/*responsive en pantallas medianas*/
+@media (max-width: 900px) {
+  .usuarios-admin__lista,
+  .usuarios-admin__detalle,
+  .usuarios-admin__form {
+    max-width: 95%;
+    min-width: auto;
+    min-height: 320px;
+  }
+}
+
+/*responsive en pantallas chicas*/
+@media (max-width: 600px) {
+  .usuarios-admin {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+  .usuarios-admin__lista,
+  .usuarios-admin__detalle,
+  .usuarios-admin__form {
+    padding: 1rem;
+    max-width: 100%;
+  }
+}
