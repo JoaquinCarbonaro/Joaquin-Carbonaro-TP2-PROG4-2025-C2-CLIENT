@@ -37,6 +37,9 @@ export class PublicacionCardComponent implements OnChanges {
   //indica si la tarjeta se muestra en la pagina de detalle
   @Input() modoDetalle = false
 
+  //indica si el usuario actual tiene permisos de administrador
+  @Input() usuarioEsAdmin = false
+
   //evento que se emite cuando el usuario da me gusta
   @Output() like = new EventEmitter<Publicacion>()
 
@@ -147,6 +150,15 @@ export class PublicacionCardComponent implements OnChanges {
     //si no hay uuid comparo por id del autor
     const autorId = this.publicacion?.autor?._id ?? ''
     return autorId !== '' && autorId === usuarioUuid
+  }
+
+  //indica si el usuario puede ejecutar la baja logica de la publicacion
+  protected get puedeEliminar(): boolean {
+    if (this.esPropia) {
+      return true
+    }
+
+    return this.usuarioEsAdmin
   }
 
   //devuelvo las iniciales del autor para usar en el avatar placeholder

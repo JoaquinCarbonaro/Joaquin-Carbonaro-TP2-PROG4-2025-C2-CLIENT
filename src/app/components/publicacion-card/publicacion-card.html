@@ -44,8 +44,8 @@
       </div>
     </div>
 
-    <!--boton eliminar visible solo si la publicacion es del usuario logueado-->
-    @if (esPropia) {
+    <!--boton eliminar visible para el autor o un administrador-->
+    @if (puedeEliminar) {
       <!--boton para eliminar la publicacion desde la tarjeta-->
       <button type="button" class="delete-btn" (click)="onEliminar($event)">Eliminar</button>
     }
