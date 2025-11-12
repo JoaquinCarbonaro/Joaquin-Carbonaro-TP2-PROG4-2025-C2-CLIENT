@@ -1,1 +1,33 @@
-<p>dashboard works!</p>
+<section class="dashboard">
+  <!--titulo principal-->
+  <h1 class="dashboard__titulo">
+    <!--icono de brujula decorativo-->
+    <i class="fas fa-compass me-2" aria-hidden="true"></i>
+    <!--texto del titulo del panel-->
+    Panel de administración
+  </h1>
+
+  <!--barra de navegacion con las opciones del panel-->
+  <nav class="dashboard__nav" aria-label="secciones del panel">
+    <!--recorro las opciones configuradas del dashboard-->
+    @for (opcion of opciones; track opcion.path) {
+      <!--enlace a cada seccion interna del panel-->
+      <a
+        class="dashboard__link"
+        routerLink="{{ opcion.path }}"
+        routerLinkActive="dashboard__link--activo"
+        >
+        <!--icono asociado a la opcion-->
+        <i class="{{ opcion.icono }}" aria-hidden="true"></i>
+        <!--texto visible de la opcion-->
+        {{ opcion.texto }}
+      </a>
+    }
+  </nav>
+
+  <!--contenedor principal donde se cargan las vistas enrutadas del dashboard-->
+  <div class="dashboard__outlet">
+    <!--punto de carga de los componentes hijos-->
+    <router-outlet />
+  </div>
+</section>

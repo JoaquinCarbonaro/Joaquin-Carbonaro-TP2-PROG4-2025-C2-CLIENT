@@ -1,0 +1,85 @@
+/*contenedor principal del dashboard*/
+.dashboard {
+  display: grid;
+  gap: 1.75rem;
+  padding: 2rem 0 3rem;
+  color: #f1f8e9;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/*titulo principal del dashboard*/
+.dashboard__titulo {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #f9a825;
+  text-shadow: none;
+}
+
+/*botones de navegacion del dashboard*/
+.dashboard__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid rgba(79, 195, 247, 0.5);
+  background: rgba(9, 45, 24, 0.9); 
+  color: #f1f8e9;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+/*efecto hover de los botones inactivos*/
+.dashboard__link:hover {
+  transform: translateY(-1px);
+  background: rgba(13, 70, 37, 0.95);
+  border-color: #4fc3f7;
+}
+
+/*boton activo*/
+.dashboard__link--activo {
+  background: #f9a825;
+  border-color: #fb8c00;
+  color: #1b5e20;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+/*hover del boton activo*/
+.dashboard__link--activo:hover {
+  background: #f9a825;
+  border-color: #f57c00;
+  transform: translateY(-1px);
+}
+
+/*contenedor del contenido enrutado dentro del dashboard*/
+.dashboard__outlet {
+  background: #f1f8e9;
+  border: 1px solid rgba(27, 94, 32, 0.18);
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.25);
+  padding: 1.25rem;
+  text-align: left;
+  color: #0b3a10;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*responsive en pantallas medianas, ajusto padding y espacio entre elementos*/
+@media (max-width: 900px) {
+  .dashboard { padding: 1.5rem 1rem 2.5rem; gap: 1.25rem; }
+}
+
+/*responsive en pantallas chicas, reduzco tamaño de titulo y padding de botones*/
+@media (max-width: 530px) {
+  .dashboard__titulo { font-size: 1.9rem; }
+  .dashboard__link { padding: 0.55rem 1.1rem; }
+}
