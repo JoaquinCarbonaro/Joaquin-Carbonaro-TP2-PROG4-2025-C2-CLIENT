@@ -29,6 +29,9 @@ export class App implements OnInit {
   //flujo reactivo que indica si hay un usuario logueado (true/false)
   usuario$ = this.authService.usuarioLogueado$
 
+  //flujo reactivo que indica si el usuario logueado tiene perfil administrador
+  usuarioAdmin$ = this.authService.usuarioAdmin$
+
   //flujo reactivo con el nombre del usuario autenticado
   nombreUsuario$ = this.authService.nombreUsuario$
 
@@ -107,10 +110,10 @@ export class App implements OnInit {
 
   //links visibles para usuarios logueados
   get linksPrivados() {
-    return [
-      { label: 'Publicaciones', path: '/publicaciones' },
-      { label: 'Mi perfil', path: '/mi-perfil' },
-    ] as const
+    const links: { label: string; path: string }[] = []
+    links.push({ label: 'Publicaciones', path: '/publicaciones' })
+    links.push({ label: 'Mi perfil', path: '/mi-perfil' })
+    return links
   }
 
   //armo la ruta completa de la imagen a partir de la url relativa o absoluta

@@ -26,6 +26,16 @@
         @if (usuario$ | async) {
 
           <!--enlaces para usuario autenticado-->
+          <!--link al panel de dashboard solo para administradores-->
+          @if (usuarioAdmin$ | async) {
+            <a
+              class="nav-link"
+              routerLink="/dashboard"
+              routerLinkActive="active-link"
+              (click)="closeMenu()"
+              >Dashboard</a
+            >
+          }
           <!--recorro la lista de links privados para mostrar opciones de navegacion-->
           @for (link of linksPrivados; track link.path) {
             <a
