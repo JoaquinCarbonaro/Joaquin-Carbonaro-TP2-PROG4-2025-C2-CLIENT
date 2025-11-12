@@ -31,13 +31,14 @@
     <div class="detalle-card-wrapper">
       <!--componente que renderiza la tarjeta completa de la publicacion-->
       <app-publicacion-card
-        [publicacion]="publicacion"               
-        [usuarioActualId]="usuarioActualId"       
-        [baseUrl]="baseUrl"                       
-        [modoDetalle]="true"                      
-        (like)="onDarLike($event)"                
-        (unlike)="onQuitarLike($event)"           
-        (eliminar)="onEliminar($event)"           
+        [publicacion]="publicacion"
+        [usuarioActualId]="usuarioActualId"
+        [baseUrl]="baseUrl"
+        [modoDetalle]="true"
+        [usuarioEsAdmin]="usuarioEsAdmin"
+        (like)="onDarLike($event)"
+        (unlike)="onQuitarLike($event)"
+        (eliminar)="onEliminar($event)"
       />
       <!--datos de la publicacion actual-->
       <!--uuid del usuario logueado-->

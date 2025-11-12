@@ -36,6 +36,8 @@ export class PublicacionDetalle implements OnInit {
   protected readonly baseUrl = environment.apiBaseUrl
   //guardo el uuid del usuario actual obtenido desde autenticacion
   protected readonly usuarioActualId = this.authService.obtenerIdUsuario()
+  //indica si el usuario actual posee permisos de administrador
+  protected readonly usuarioEsAdmin = this.authService.esUsuarioAdmin()
 
   //guardo el id interno de la publicacion actual tomada desde la ruta
   private publicacionId = ''
