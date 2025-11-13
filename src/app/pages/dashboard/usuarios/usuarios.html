@@ -3,19 +3,24 @@
   <article class="usuarios-admin__lista" aria-live="polite">
     <!--encabezado con titulo y acciones superiores-->
     <div class="usuarios-admin__encabezado">
-      <!--titulo de la seccion listado-->
-      <h2 class="usuarios-admin__titulo">Gestión de usuarios</h2>
+      <!--titulo de la seccion listado con icono-->
+      <h2 class="usuarios-admin__titulo">
+        <i class="fas fa-users-gear" aria-hidden="true"></i>
+        Gestión de usuarios
+      </h2>
 
       <!--botones de acciones superiores-->
       <div class="usuarios-admin__acciones-top">
         <!--boton para recargar la lista-->
         <button class="btn btn-pill btn-secondary" type="button"
                 (click)="cargarUsuarios()" [disabled]="cargandoLista()">
+          <i class="fas fa-rotate-right" aria-hidden="true"></i>
           <span class="btn-text">Actualizar</span>
         </button>
 
         <!--boton para abrir el formulario de nuevo usuario-->
         <button class="btn btn-pill btn-primary" type="button" (click)="abrirFormulario()">
+          <i class="fas fa-user-plus" aria-hidden="true"></i>
           <span class="btn-text">Nuevo usuario</span>
         </button>
       </div>
@@ -23,12 +28,18 @@
 
     <!--estado: cargando lista-->
     @if (cargandoLista()) {
-      <p class="usuarios-admin__estado">Cargando usuarios...</p>
+      <p class="usuarios-admin__estado">
+        <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+        Cargando usuarios...
+      </p>
     }
 
     <!--estado: lista vacia y no cargando-->
     @if (!cargandoLista() && usuarios().length === 0) {
-      <p class="usuarios-admin__estado">Todavía no hay usuarios registrados.</p>
+      <p class="usuarios-admin__estado">
+        <i class="fas fa-circle-info" aria-hidden="true"></i>
+        Todavía no hay usuarios registrados.
+      </p>
     }
 
     <!--tabla de usuarios cuando hay datos-->
@@ -40,11 +51,14 @@
           <thead>
             <tr>
               <!--encabezados de columnas-->
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Perfil</th>
-              <th>Estado</th>
-              <th class="col-acciones">Acciones</th>
+              <th><i class="fas fa-id-card" aria-hidden="true"></i> Nombre</th>
+              <th><i class="fas fa-envelope" aria-hidden="true"></i> Email</th>
+              <th><i class="fas fa-user-tag" aria-hidden="true"></i> Perfil</th>
+              <th><i class="fas fa-toggle-on" aria-hidden="true"></i> Estado</th>
+              <th class="col-acciones">
+                <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -66,8 +80,18 @@
                 <td class="text-capitalize">{{ usuario.perfil }}</td>
                 <!--columna estado con badge-->
                 <td>
-                  @if (usuario.estado) { <span class="badge bg-success">Activo</span> }
-                  @else { <span class="badge bg-danger">Inactivo</span> }
+                  @if (usuario.estado) {
+                    <span class="badge bg-success">
+                      <i class="fas fa-circle" aria-hidden="true"></i>
+                      Activo
+                    </span>
+                  }
+                  @else {
+                    <span class="badge bg-danger">
+                      <i class="fas fa-circle" aria-hidden="true"></i>
+                      Inactivo
+                    </span>
+                  }
                 </td>
 
                 <!--columna acciones, detengo propagacion para no seleccionar fila-->
@@ -76,21 +100,13 @@
                   <button type="button" class="btn btn-icon btn-danger-ghost"
                           (click)="deshabilitar(usuario)" [disabled]="!usuario.estado"
                           title="Deshabilitar" aria-label="Deshabilitar usuario">
-                    <!--icono svg deshabilitar-->
-                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                      <path d="M15 12a5 5 0 1 0-6 0 8 8 0 0 0-5 7h2a6 6 0 0 1 12 0h2a8 8 0 0 0-5-7Z" fill="currentColor"/>
-                      <path d="M4 4l16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
+                    <i class="fas fa-user-slash" aria-hidden="true"></i>
                   </button>
                   <!--boton reactivar (alta logica)-->
                   <button type="button" class="btn btn-icon btn-success-ghost"
                           (click)="reactivar(usuario)" [disabled]="usuario.estado"
                           title="Reactivar" aria-label="Reactivar usuario">
-                    <!--icono svg reactivar-->
-                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                      <path d="M12 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm-9 9a8 8 0 0 1 16 0H3Z" fill="currentColor"/>
-                      <path d="M21 8l-3 3-1.5-1.5" stroke="#0b3a10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <i class="fas fa-user-check" aria-hidden="true"></i>
                   </button>
                 </td>
               </tr>
@@ -106,21 +122,43 @@
     <aside class="usuarios-admin__detalle">
       <!--encabezado del detalle con boton cerrar-->
       <div class="usuarios-admin__detalle-header">
-        <h3 class="usuarios-admin__titulo">Detalle del usuario</h3>
+        <h3 class="usuarios-admin__titulo">
+          <i class="fas fa-user-circle" aria-hidden="true"></i>
+          Detalle del usuario
+        </h3>
         <!--cierra el panel de detalle-->
         <button class="btn btn-pill btn-secondary" type="button" (click)="cerrarDetalle()">
+          <i class="fas fa-xmark" aria-hidden="true"></i>
           <span class="btn-text">Cerrar</span>
         </button>
       </div>
 
       <!--lista de propiedades del usuario-->
       <ul class="usuarios-admin__detalle-lista">
-        <li><strong>Nombre:</strong> {{ usuarioSeleccionado()?.nombre }} {{ usuarioSeleccionado()?.apellido }}</li>
-        <li><strong>Correo:</strong> {{ usuarioSeleccionado()?.email }}</li>
-        <li><strong>Usuario:</strong> {{ usuarioSeleccionado()?.userName }}</li>
-        <li><strong>Perfil:</strong> {{ usuarioSeleccionado()?.perfil }}</li>
-        <li><strong>Estado:</strong> {{ usuarioSeleccionado()?.estado ? 'Activo' : 'Inactivo' }}</li>
-        <li><strong>Descripción:</strong> {{ usuarioSeleccionado()?.descripcion }}</li>
+        <li>
+          <strong><i class="fas fa-id-badge" aria-hidden="true"></i> Nombre:</strong>
+          {{ usuarioSeleccionado()?.nombre }} {{ usuarioSeleccionado()?.apellido }}
+        </li>
+        <li>
+          <strong><i class="fas fa-envelope" aria-hidden="true"></i> Correo:</strong>
+          {{ usuarioSeleccionado()?.email }}
+        </li>
+        <li>
+          <strong><i class="fas fa-user" aria-hidden="true"></i> Usuario:</strong>
+          {{ usuarioSeleccionado()?.userName }}
+        </li>
+        <li>
+          <strong><i class="fas fa-user-tag" aria-hidden="true"></i> Perfil:</strong>
+          {{ usuarioSeleccionado()?.perfil }}
+        </li>
+        <li>
+          <strong><i class="fas fa-toggle-on" aria-hidden="true"></i> Estado:</strong>
+          {{ usuarioSeleccionado()?.estado ? 'Activo' : 'Inactivo' }}
+        </li>
+        <li>
+          <strong><i class="fas fa-align-left" aria-hidden="true"></i> Descripción:</strong>
+          {{ usuarioSeleccionado()?.descripcion }}
+        </li>
       </ul>
     </aside>
   }
@@ -130,9 +168,13 @@
     <article class="usuarios-admin__form">
       <!--encabezado del formulario con boton cerrar-->
       <div class="usuarios-admin__detalle-header">
-        <h2 class="usuarios-admin__titulo">Registro de nuevos usuarios</h2>
+        <h2 class="usuarios-admin__titulo">
+          <i class="fas fa-user-plus" aria-hidden="true"></i>
+          Registro de nuevos usuarios
+        </h2>
         <!--cierra el formulario de alta-->
         <button class="btn btn-pill btn-secondary" type="button" (click)="cerrarFormulario()">
+          <i class="fas fa-xmark" aria-hidden="true"></i>
           <span class="btn-text">Cerrar</span>
         </button>
       </div>
@@ -143,13 +185,19 @@
         <div class="row g-3">
           <!--campo nombre-->
           <div class="col-md-6">
-            <label class="form-label" for="fNombre">Nombre</label>
+            <label class="form-label" for="fNombre">
+              <i class="fas fa-user" aria-hidden="true"></i>
+              Nombre
+            </label>
             <input id="fNombre" type="text" class="form-control" formControlName="nombre" autocomplete="given-name" />
             <small class="text-danger">{{ obtenerError('nombre') }}</small>
           </div>
           <!--campo apellido-->
           <div class="col-md-6">
-            <label class="form-label" for="fApellido">Apellido</label>
+            <label class="form-label" for="fApellido">
+              <i class="fas fa-user" aria-hidden="true"></i>
+              Apellido
+            </label>
             <input id="fApellido" type="text" class="form-control" formControlName="apellido" autocomplete="family-name" />
             <small class="text-danger">{{ obtenerError('apellido') }}</small>
           </div>
@@ -159,13 +207,19 @@
         <div class="row g-3">
           <!--campo email-->
           <div class="col-md-6">
-            <label class="form-label" for="fEmail">Email</label>
+            <label class="form-label" for="fEmail">
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              Email
+            </label>
             <input id="fEmail" type="email" class="form-control" formControlName="email" autocomplete="email" />
             <small class="text-danger">{{ obtenerError('email') }}</small>
           </div>
           <!--campo nombre de usuario-->
           <div class="col-md-6">
-            <label class="form-label" for="fUser">Nombre de usuario</label>
+            <label class="form-label" for="fUser">
+              <i class="fas fa-user" aria-hidden="true"></i>
+              Nombre de usuario
+            </label>
             <input id="fUser" type="text" class="form-control" formControlName="userName" autocomplete="username" />
             <small class="text-danger">{{ obtenerError('userName') }}</small>
           </div>
@@ -175,13 +229,19 @@
         <div class="row g-3">
           <!--campo password-->
           <div class="col-md-6">
-            <label class="form-label" for="fPass">Contraseña</label>
+            <label class="form-label" for="fPass">
+              <i class="fas fa-lock" aria-hidden="true"></i>
+              Contraseña
+            </label>
             <input id="fPass" type="password" class="form-control" formControlName="password" autocomplete="new-password" />
             <small class="text-danger">{{ obtenerError('password') }}</small>
           </div>
           <!--campo repetir password con validacion de mismatch-->
           <div class="col-md-6">
-            <label class="form-label" for="fPass2">Repetir contraseña</label>
+            <label class="form-label" for="fPass2">
+              <i class="fas fa-lock" aria-hidden="true"></i>
+              Repetir contraseña
+            </label>
             <input id="fPass2" type="password" class="form-control" formControlName="confirmPassword" autocomplete="new-password" />
             <!--error por contraseñas no coinciden-->
             @if (formulario.hasError('passwordMismatch') && formulario.get('confirmPassword')?.touched) {
@@ -195,7 +255,10 @@
         <div class="row g-3">
           <!--campo fecha de nacimiento con errores especificos-->
           <div class="col-md-6">
-            <label class="form-label" for="fNac">Fecha de nacimiento</label>
+            <label class="form-label" for="fNac">
+              <i class="fas fa-calendar-day" aria-hidden="true"></i>
+              Fecha de nacimiento
+            </label>
             <input id="fNac" type="date" class="form-control" formControlName="fechaNacimiento" />
             <!--errores de validacion de fecha-->
             @if (formulario.get('fechaNacimiento')?.hasError('required') && formulario.get('fechaNacimiento')?.touched) {
@@ -210,21 +273,30 @@
           </div>
           <!--campo imagen de perfil-->
           <div class="col-md-6">
-            <label class="form-label" for="fImg">Imagen de perfil</label>
+            <label class="form-label" for="fImg">
+              <i class="fas fa-image" aria-hidden="true"></i>
+              Imagen de perfil
+            </label>
             <input id="fImg" type="file" class="form-control" (change)="seleccionarImagen($event)" accept="image/*" />
           </div>
         </div>
 
         <!--bloque descripcion-->
         <div class="mb-3">
-          <label class="form-label" for="fDesc">Descripción</label>
+          <label class="form-label" for="fDesc">
+            <i class="fas fa-align-left" aria-hidden="true"></i>
+            Descripción
+          </label>
           <textarea id="fDesc" rows="3" class="form-control" formControlName="descripcion"></textarea>
           <small class="text-danger">{{ obtenerError('descripcion') }}</small>
         </div>
 
         <!--bloque perfil con radios personalizados-->
         <fieldset class="mb-3">
-          <legend class="form-label">Perfil</legend>
+          <legend class="form-label">
+            <i class="fas fa-user-tag" aria-hidden="true"></i>
+            Perfil
+          </legend>
           <div class="perfil-group">
             <!--opcion perfil usuario-->
             <label class="check-option">
@@ -245,9 +317,13 @@
         <!--acciones del formulario-->
         <div class="acciones-form">
           <!--limpia los campos del formulario-->
-          <button class="btn btn-pill btn-secondary" type="button" (click)="limpiarFormulario()">Limpiar</button>
+          <button class="btn btn-pill btn-secondary" type="button" (click)="limpiarFormulario()">
+            <i class="fas fa-eraser" aria-hidden="true"></i>
+            Limpiar
+          </button>
           <!--crea el usuario si el formulario es valido-->
           <button class="btn btn-pill btn-primary" type="submit" [disabled]="formulario.invalid || creandoUsuario()">
+            <i class="fas fa-floppy-disk" aria-hidden="true"></i>
             <span class="btn-text">Crear usuario</span>
           </button>
         </div>

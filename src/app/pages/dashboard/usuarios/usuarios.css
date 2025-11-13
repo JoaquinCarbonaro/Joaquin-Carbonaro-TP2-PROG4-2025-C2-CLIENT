@@ -223,6 +223,26 @@
   border-color: #4fc3f7;
 }
 
+/*espacio vertical extra entre las filas del formulario*/
+.usuarios-admin__form .row.g-3 {
+  margin-bottom: 1.1rem;
+}
+
+/*espacio extra para bloques individuales (descripcion, perfil, etc)*/
+.usuarios-admin__form .mb-3 {
+  margin-bottom: 1.35rem;
+}
+
+/*separacion extra entre el bloque perfil y los botones*/
+.usuarios-admin__form fieldset.mb-3 {
+  margin-bottom: 1.6rem;
+}
+
+/*separacion de los botones respecto del contenido anterior*/
+.usuarios-admin__form .acciones-form {
+  margin-top: 0.75rem;
+}
+
 /*grupo de radios en formato de chips*/
 .radio-row {
   display: flex;
@@ -253,6 +273,11 @@
 .btn {
   font-weight: 700;
   border-radius: 999px;
+}
+
+/*espaciado entre icono y texto dentro de los botones pill*/
+.btn-pill i {
+  margin-right: 0.5rem;
 }
 
 /*boton principal con degradado naranja*/
