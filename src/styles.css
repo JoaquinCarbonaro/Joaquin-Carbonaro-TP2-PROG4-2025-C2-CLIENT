@@ -1,3 +1,5 @@
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
 /*tipografia base*/
 :root {
   font-family: 'Montserrat', Arial, sans-serif;
