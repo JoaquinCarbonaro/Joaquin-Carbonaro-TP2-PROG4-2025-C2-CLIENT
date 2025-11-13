@@ -51,7 +51,13 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios',
-        loadComponent: () => import('./pages/dashboard/usuarios/usuarios').then((m) => m.DashboardUsuarios)
+        loadComponent: () =>
+          import('./pages/dashboard/usuarios/usuarios').then((m) => m.DashboardUsuarios)
+      },
+      {
+        path: 'estadisticas',
+        loadComponent: () =>
+          import('./pages/dashboard/estadisticas/estadisticas').then((m) => m.DashboardEstadisticas)
       }
     ]
   },
