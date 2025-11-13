@@ -1,1 +1,119 @@
-<p>estadisticas works!</p>
+<section class="estadisticas">
+  
+  <!--tarjeta principal de estadisticas-->
+  <article class="estadisticas__tarjeta">
+
+    <!--titulo de la seccion con icono representativo-->
+    <h1 class="estadisticas__titulo">
+      <i class="fas fa-chart-column" aria-hidden="true"></i>
+      Estadísticas
+    </h1>
+
+    <!--bloque de filtros para elegir rango de fechas-->
+    <div class="estadisticas__filtros">
+
+      <!--campo de fecha inicial-->
+      <label class="estadisticas__label">
+        Desde
+        <input
+          class="estadisticas__input"
+          type="date"
+          [(ngModel)]="fechaDesde"
+        />
+      </label>
+
+      <!--campo de fecha final-->
+      <label class="estadisticas__label">
+        Hasta
+        <input
+          class="estadisticas__input"
+          type="date"
+          [(ngModel)]="fechaHasta"
+        />
+      </label>
+
+      <!--boton que dispara la carga de los datos y actualiza graficos-->
+      <button
+        type="button"
+        class="estadisticas__boton"
+        (click)="mostrarDatos()"
+      >
+        <i class="fas fa-chart-line" aria-hidden="true"></i>
+        Mostrar datos
+      </button>
+    </div>
+
+    <!--bloque que agrupa todos los graficos y sus mensajes de estado-->
+    <div class="estadisticas__graficos">
+
+      
+      <!--grafico: cantidad de publicaciones por usuario-->
+      <section class="estadisticas__grafico">
+
+        <!--titulo interno del grafico-->
+        <h2 class="estadisticas__grafico-titulo estadisticas__grafico-titulo--naranja">
+          Publicaciones por usuario
+        </h2>
+
+        <!--canvas donde echarts renderiza el grafico-->
+        <div
+          #graficoPublicaciones
+          class="estadisticas__grafico-canvas"
+        ></div>
+
+        <!--mensaje mostrado si no se obtuvieron datos para este grafico-->
+        @if (sinDatosPublicaciones()) {
+          <p class="estadisticas__mensaje-vacio">
+            No se encontraron publicaciones en ese rango.
+          </p>
+        }
+      </section>
+
+
+      <!--grafico: cantidad total de comentarios realizados en el rango-->
+      <section class="estadisticas__grafico">
+
+        <!--titulo interno del grafico-->
+        <h2 class="estadisticas__grafico-titulo estadisticas__grafico-titulo--celeste">
+          Comentarios realizados
+        </h2>
+
+        <!--zona donde echarts dibuja el grafico-->
+        <div
+          #graficoComentarios
+          class="estadisticas__grafico-canvas"
+        ></div>
+
+        <!--mensaje si no hay resultados-->
+        @if (sinDatosComentarios()) {
+          <p class="estadisticas__mensaje-vacio">
+            No se encontraron comentarios en ese rango.
+          </p>
+        }
+      </section>
+
+
+      <!--grafico: cantidad de comentarios agrupados por publicacion-->
+      <section class="estadisticas__grafico estadisticas__grafico--alto">
+
+        <!--titulo del grafico-->
+        <h2 class="estadisticas__grafico-titulo estadisticas__grafico-titulo--naranja">
+          Comentarios por publicación
+        </h2>
+
+        <!--canvas para render del grafico-->
+        <div
+          #graficoComentariosPublicacion
+          class="estadisticas__grafico-canvas"
+        ></div>
+
+        <!--mensaje si no hay datos en este grafico-->
+        @if (sinDatosComentariosPublicacion()) {
+          <p class="estadisticas__mensaje-vacio">
+            No se encontraron comentarios por publicación.
+          </p>
+        }
+      </section>
+    </div>
+  </article>
+</section>

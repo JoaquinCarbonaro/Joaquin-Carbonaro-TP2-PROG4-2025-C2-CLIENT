@@ -1,0 +1,190 @@
+/*layout principal del panel de estadisticas*/ 
+.estadisticas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 0 3rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/*tarjeta contenedora de toda la seccion de estadisticas*/
+.estadisticas__tarjeta {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(27, 94, 32, 0.15);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+  padding: 1.5rem 1.75rem 2rem;
+  width: 100%;
+  max-width: 900px; 
+  min-width: 900px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/*estilo del titulo principal*/
+.estadisticas__titulo {
+  margin: 0;
+  color: #0b3a10;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/*separacion del icono en el titulo*/
+.estadisticas__titulo i {
+  margin-right: 0.5rem;
+}
+
+/*contenedor de los filtros*/
+.estadisticas__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/*estilo de las etiquetas de los filtros*/
+.estadisticas__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: #0b3a10;
+}
+
+/*estilo de los campos de fecha*/
+.estadisticas__input {
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(13, 70, 37, 0.3);
+  background: #ffffff;
+  color: #0b3a10;
+  min-width: 220px;
+}
+
+/*estilo del boton de actualizar*/
+.estadisticas__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.6rem;
+  border-radius: 999px;
+  border: none;
+  background: #f9a825;
+  color: #0b3a10;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+/*efecto hover del boton*/
+.estadisticas__boton:hover {
+  background: #fb8c00;
+  transform: translateY(-1px);
+}
+
+/*contenedor de los graficos*/
+.estadisticas__graficos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/*contenedor base de cada grafico*/
+.estadisticas__grafico {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  background: #0b3a10;
+  border-radius: 1rem;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+  padding: 0.75rem 1rem 1.25rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/*altura extra para el grafico horizontal de barras*/
+.estadisticas__grafico--alto {
+  height: 420px;
+}
+
+/*titulo interno del grafico*/
+.estadisticas__grafico-titulo {
+  margin: 0 0 0.5rem;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/*variacion de color naranja para titulo del grafico*/
+.estadisticas__grafico-titulo--naranja {
+  color: #f9a825;
+}
+
+/*variacion de color celeste para titulo del grafico*/
+.estadisticas__grafico-titulo--celeste {
+  color: #4fc3f7;
+}
+
+/*contenedor donde echarts dibuja el grafico*/
+.estadisticas__grafico-canvas {
+  width: 100%;
+  height: calc(100% - 2rem); /*espacio para el titulo*/
+}
+
+/*mensaje mostrado cuando no hay resultados (centrado sobre el grafico)*/
+.estadisticas__mensaje-vacio {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(79, 195, 247, 0.18);
+  color: #f1f8e9;
+  font-weight: 600;
+  text-align: center;
+  font-size: 0.9rem;
+  max-width: 80%;
+}
+
+/*pantallas medianas*/
+@media (max-width: 900px) {
+  /*ajusto tarjeta de estadisticas*/
+  .estadisticas__tarjeta {
+    max-width: 95%;
+    min-width: auto;
+  }
+}
+
+/*pantallas chicas*/
+@media (max-width: 600px) {
+  /*ajusto padding general de la seccion*/
+  .estadisticas {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  /*reduzco ancho minimo de los inputs*/
+  .estadisticas__input {
+    min-width: 160px;
+  }
+
+  /*reduzco altura del contenedor de grafico*/
+  .estadisticas__grafico {
+    height: 320px;
+  }
+
+  /*reduzco altura extra del grafico alto*/
+  .estadisticas__grafico--alto {
+    height: 380px;
+  }
+}
