@@ -11,6 +11,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router'
 export class Dashboard {
   //defino las opciones visibles en el panel
   protected readonly opciones = [
-    { path: 'usuarios', texto: 'Usuarios', icono: 'fas fa-users' }
+    { path: 'usuarios', texto: 'Usuarios', icono: 'fas fa-users' },
+    { path: 'estadisticas', texto: 'Estadísticas', icono: 'fas fa-chart-line' }
   ]
 }
