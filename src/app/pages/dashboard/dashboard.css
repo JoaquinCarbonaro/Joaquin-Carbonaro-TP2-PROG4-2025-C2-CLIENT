@@ -73,6 +73,17 @@
   box-sizing: border-box;
 }
 
+/*contenedor de los botones del dashboard*/
+.dashboard__nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;        
+  flex-wrap: wrap;     
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
 /*responsive en pantallas medianas, ajusto padding y espacio entre elementos*/
 @media (max-width: 900px) {
   .dashboard { padding: 1.5rem 1rem 2.5rem; gap: 1.25rem; }
@@ -82,4 +93,5 @@
 @media (max-width: 530px) {
   .dashboard__titulo { font-size: 1.9rem; }
   .dashboard__link { padding: 0.55rem 1.1rem; }
+  .dashboard__nav { gap: 0.5rem; }
 }
