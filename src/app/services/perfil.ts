@@ -95,6 +95,10 @@ export class PerfilService {
     //si viene fecha de nacimiento la dejo como string plano
     const fechaNacimiento: string | null = data?.fechaNacimiento ?? null
 
+    //normalizo el rol, usando 'usuario' como valor por defecto si no viene
+    const perfil: 'usuario' | 'administrador' =
+      (data?.perfil as 'usuario' | 'administrador') ?? 'usuario'
+
     //creo una instancia de perfil usando valores con fallback
     return new Perfil({
       uuid: data?.uuid ?? '',
@@ -104,7 +108,8 @@ export class PerfilService {
       email: data?.email ?? '',
       fechaNacimiento: fechaNacimiento,
       descripcion: data?.descripcion ?? '',
-      imagenPerfil: data?.imagenPerfil ?? ''
+      imagenPerfil: data?.imagenPerfil ?? '',
+      perfil: perfil,
     })
   }
 
