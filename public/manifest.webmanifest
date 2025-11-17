@@ -1,6 +1,6 @@
 {
-  "name": "Joaquin-Carbonaro-TP2-PROG4-2025-C2-CLIENT",
-  "short_name": "Joaquin-Carbonaro-TP2-PROG4-2025-C2-CLIENT",
+  "name": "Rumbo Criollo",
+  "short_name": "Rumbo",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
