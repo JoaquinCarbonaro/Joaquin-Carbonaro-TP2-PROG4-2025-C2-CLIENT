@@ -8,6 +8,7 @@ export class Perfil {
   fechaNacimiento: Date | string | null = null //puede ser Date o string ISO
   descripcion!: string
   imagenPerfil!: string //url o nombre del archivo de la imagen
+  perfil!: 'usuario' | 'administrador' //rol visible del usuario para la vista
 
   //constructor que permite crear el perfil con algunos campos opcionales
   constructor(init?: Partial<Perfil>) {
@@ -19,4 +20,4 @@ export class Perfil {
 //Se usa para:
 //Pagina “Mi perfil” y perfiles de otros usuarios
 //Mostrar avatar, nombre, descripción y publicaciones
-//Vincular un autor dentro de una publicacion o comentario (sin exponer todo el usuario)
+//Vincular un autor dentro de una publicacion o comentario (sin exponer todo el usuario).
