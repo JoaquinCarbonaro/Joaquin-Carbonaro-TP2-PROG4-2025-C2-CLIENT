@@ -97,8 +97,13 @@
           }
         </div>
 
-        <!--boton para enviar el formulario de nueva publicacion-->
-        <button type="submit" class="primary-btn" [disabled]="formulario.invalid || creando">
+        <!--boton para enviar el formulario de nueva publicacion--> <!--uso de la directiva propia-->
+        <button
+          type="submit"
+          class="primary-btn"
+          [appBotonCargando]="creando"
+          [disabled]="formulario.invalid || creando"
+        >
           {{ creando ? 'Creando...' : 'Publicar' }}
         </button>
       </form>

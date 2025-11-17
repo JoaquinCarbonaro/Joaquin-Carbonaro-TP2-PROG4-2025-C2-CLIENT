@@ -8,13 +8,21 @@ import { mostrarSwal } from '../../utils/swal'
 import { environment } from '../../../environments/environment'
 import { Auth } from '../../services/auth'
 import { RouterLink } from '@angular/router'
+import { BotonCargandoDirective } from '../../directives/boton-cargando'
 
 @Component({
   standalone: true,
   selector: 'app-publicaciones-page',
   templateUrl: './publicaciones.html',
   styleUrl: './publicaciones.css',
-  imports: [CommonModule, NgClass, ReactiveFormsModule, PublicacionCardComponent, RouterLink]
+  imports: [
+    CommonModule,
+    NgClass,
+    ReactiveFormsModule,
+    PublicacionCardComponent,
+    RouterLink,
+    BotonCargandoDirective
+  ]
 })
 export class Publicaciones implements OnInit {
 
