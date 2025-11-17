@@ -15,13 +15,24 @@ import { Publicacion } from '../../models/publicacion'
 import { Comentario } from '../../models/comentario'
 import { PublicacionesService } from '../../services/publicaciones'
 import { mostrarSwal } from '../../utils/swal'
+import { TextoResumidoPipe } from '../../pipes/texto-resumido-pipe'
+import { TiempoRelativoPipe } from '../../pipes/tiempo-relativo-pipe'
+import { ResaltarCardDirective } from '../../directives/resaltar-card'
 
 @Component({
   selector: 'app-publicacion-card',
   standalone: true,
   templateUrl: './publicacion-card.html',
   styleUrl: './publicacion-card.css',
-  imports: [CommonModule, DatePipe, NgClass, FormsModule],
+  imports: [
+    CommonModule,
+    DatePipe,
+    NgClass,
+    FormsModule,
+    TextoResumidoPipe,
+    TiempoRelativoPipe,
+    ResaltarCardDirective
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PublicacionCardComponent implements OnChanges {

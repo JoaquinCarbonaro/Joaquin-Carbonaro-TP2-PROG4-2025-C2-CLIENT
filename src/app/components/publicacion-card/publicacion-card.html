@@ -1,5 +1,9 @@
 <!--card publicacion-->
-<article class="publicacion-card">
+<article
+  class="publicacion-card"
+  [appResaltarCard]="usuarioEsAdmin ? '#fdd835' : '#4fc3f7'"
+  resaltarSombra="0 10px 24px rgba(0, 0, 0, 0.35)"
+> <!--uso de la directiva propia-->
 
   <!--encabezado con datos del autor y boton eliminar-->
   <header class="card-header">
@@ -40,7 +44,7 @@
         <!--nombre de usuario del autor-->
         <p class="autor-nombre">@{{ publicacion.autor.userName }}</p>
         <!--fecha de publicacion formateada-->
-        <span class="fecha">{{ publicacion.createdAt | date: "d 'de' MMMM 'de' y" }}</span>
+        <span class="fecha">{{ publicacion.createdAt | tiempoRelativo }}</span> <!--uso del pipe propio-->
       </div>
     </div>
 
@@ -79,7 +83,14 @@
     <h2 class="titulo">{{ publicacion.titulo }}</h2>
 
     <!--texto o mensaje del post-->
-    <p class="mensaje">{{ publicacion.mensaje }}</p>
+    <p class="mensaje">
+      @if (modoDetalle) {
+        {{ publicacion.mensaje }}
+      }
+      @else {
+        {{ publicacion.mensaje | textoResumido: 220: '... ver más' }} <!--uso del pipe propio-->
+      }
+    </p>
   </section>
 
   <!--pie de la tarjeta con boton me gusta-->
