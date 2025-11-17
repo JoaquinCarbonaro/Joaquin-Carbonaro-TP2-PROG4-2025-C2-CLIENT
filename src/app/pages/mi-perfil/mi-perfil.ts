@@ -21,13 +21,24 @@ import {
   obtenerMensajeErrorFechaModalPerfil,
   obtenerDatosActualizacionModalPerfil
 } from '../../utils/perfil-modal'
+import { RolLegiblePipe } from '../../pipes/rol-legible-pipe'
+import { EtiquetaPerfilDirective } from '../../directives/etiqueta-perfil'
+import { BotonCargandoDirective } from '../../directives/boton-cargando'
 
 @Component({
   standalone: true,
   selector: 'app-mi-perfil-page',
   templateUrl: './mi-perfil.html',
   styleUrl: './mi-perfil.css',
-  imports: [CommonModule, ReactiveFormsModule, PublicacionCardComponent, RouterLink]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    PublicacionCardComponent,
+    RouterLink,
+    RolLegiblePipe,
+    EtiquetaPerfilDirective,
+    BotonCargandoDirective
+  ]
 })
 export class MiPerfil implements OnInit, OnDestroy {
 

@@ -134,6 +134,13 @@
   color: #4fc3f7;
 }
 
+/*etiqueta que muestra el rol del usuario*/
+.rol-etiqueta {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /*descripcion del perfil del usuario*/
 .descripcion {
   margin: 0.4rem 0 0;

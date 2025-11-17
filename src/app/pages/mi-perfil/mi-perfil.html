@@ -53,6 +53,10 @@
           <h1 class="nombre">{{ perfil.nombre }} {{ perfil.apellido }}</h1>
           <!--nombre de usuario-->
           <p class="usuario">@{{ perfil.userName }}</p>
+          <!--rol mostrado como etiqueta visual-->
+          <p class="rol-etiqueta" [appEtiquetaPerfil]="perfil.perfil">
+            {{ perfil.perfil | rolLegible }} <!--uso del pipe propio-->
+          </p>
           <!--descripcion personal-->
           <p class="descripcion">{{ perfil.descripcion }}</p>
         </div>
@@ -127,12 +131,13 @@
 
         <!--boton para cargar mas publicaciones-->
         @if (hayMas) {
-          <!--contenedor del boton de carga-->
+          <!--contenedor del boton de carga--> <!--uso de la directiva propia-->
           <div class="acciones-cargar-mas">
             <button
               type="button"
               class="cargar-mas-btn"
               (click)="cargarMasPublicaciones()"
+              [appBotonCargando]="cargandoPublicaciones"
               [disabled]="cargandoPublicaciones"
             >
               {{ cargandoPublicaciones ? 'Cargando...' : 'Cargar más' }}
