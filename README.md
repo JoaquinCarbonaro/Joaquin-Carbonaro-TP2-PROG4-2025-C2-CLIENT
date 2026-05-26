@@ -14,7 +14,11 @@ https://github.com/JoaquinCarbonaro/Rumbo-Criollo-red-social-nestjs-api
 
 ## 🚀 Demo
 
-La aplicación fue desplegada originalmente con frontend en Vercel y backend en Render, pero actualmente la demo puede no estar completamente funcional porque requiere la API y la base de datos activas.
+El frontend se encuentra desplegado en Vercel y puede visualizarse desde el siguiente enlace:
+
+https://joaquin-carbonaro-tp-2-prog-4-2025.vercel.app
+
+> Nota: algunas funcionalidades, como autenticación, publicaciones, comentarios, likes o carga de datos, pueden no estar disponibles actualmente porque dependen de la API y la base de datos utilizadas para el trabajo práctico. De todas formas, el deploy permite visualizar la interfaz y la estructura general del frontend.
 
 Repositorio frontend:
 
