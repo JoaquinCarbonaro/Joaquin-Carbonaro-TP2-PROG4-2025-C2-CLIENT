@@ -1,80 +1,175 @@
-# TP #2 — Red Social (Frontend / Client) — Programación IV
+# Rumbo Criollo — Red Social Frontend
 
-Aplicación web tipo **“Red Social”** desarrollada como Trabajo Práctico de **Programación IV**.  
-El objetivo es que los usuarios puedan **registrarse / iniciar sesión**, interactuar con un **feed de publicaciones** (crear, ver, likear y comentar), navegar **perfiles** y que un **administrador** pueda gestionar usuarios y consultar **estadísticas** desde un dashboard.
+Frontend de una aplicación web tipo **red social** desarrollada con **Angular y TypeScript**.
 
-> Este repositorio contiene únicamente el **frontend (Angular)**.  
-> La parte **backend (NestJS)** se encuentra en:  
-> https://github.com/JoaquinCarbonaro/Joaquin-Carbonaro-TP2-PROG4-2025-C2-SERVER.git
+Este proyecto fue realizado como **Trabajo Práctico N.º 2 de la materia Programación IV**. El objetivo es que los usuarios puedan registrarse, iniciar sesión, interactuar con publicaciones, comentar, dar likes, navegar perfiles y que un administrador pueda gestionar usuarios y consultar estadísticas desde un dashboard.
 
-## 🚀 Demo (Deploy)
-- Vercel (Frontend): https://joaquin-carbonaro-tp-2-prog-4-2025.vercel.app/
-- Render (API): https://joaquin-carbonaro-tp2-prog4-2025-c2.onrender.com
+Este repositorio contiene únicamente el **frontend** de la aplicación.
+
+Backend/API:
+
+https://github.com/JoaquinCarbonaro/Rumbo-Criollo-red-social-nestjs-api
+
+---
+
+## 🚀 Demo
+
+La aplicación fue desplegada originalmente con frontend en Vercel y backend en Render, pero actualmente la demo puede no estar completamente funcional porque requiere la API y la base de datos activas.
+
+Repositorio frontend:
+
+https://github.com/JoaquinCarbonaro/Rumbo-Criollo-red-social-angular-frontend
+
+Repositorio backend/API:
+
+https://github.com/JoaquinCarbonaro/Rumbo-Criollo-red-social-nestjs-api
 
 ---
 
 ## ✨ Funcionalidades principales
 
-### 🔐 Autenticación y control de acceso (JWT)
-- Registro e inicio de sesión contra la API.
-- Manejo de sesión con **JWT** (expira a los **15 minutos**).
-- Renovación de sesión desde el frontend (sin cortar la navegación).
-- Rutas protegidas y control por **roles** (usuario / administrador).
-- **Interceptor HTTP** para adjuntar automáticamente el token y manejar respuestas **401** (sesión vencida / no autorizado).
+### 🔐 Autenticación y control de acceso
 
-### 📝 Publicaciones (Feed)
-- Ver publicaciones en un feed.
-- Ordenamiento (por fecha / por likes).
-- Crear publicación (texto + imagen opcional).
-- Dar / quitar **like**.
-- Eliminar publicaciones propias (y como admin, de cualquier usuario).
+- Registro de usuarios.
+- Inicio de sesión contra API backend.
+- Manejo de sesión mediante JWT.
+- Renovación de sesión desde el frontend.
+- Rutas protegidas.
+- Control de acceso por roles: usuario y administrador.
+- Interceptor HTTP para adjuntar el token automáticamente.
+- Manejo de respuestas 401 para sesión vencida o acceso no autorizado.
 
-### 💬 Comentarios
-- Ver comentarios de una publicación.
-- Agregar comentarios.
-- Editar comentario propio (marcando que fue modificado).
-- Paginación de comentarios con “cargar más”.
+---
 
-### 👤 Perfiles
-- “Mi perfil” con información del usuario y sus publicaciones.
-- Visualización de perfiles de otros usuarios desde el feed/publicaciones.
+## 📝 Feed de publicaciones
 
-### 🧑‍💼 Dashboard Admin (solo administrador)
-- Gestión de usuarios:
-  - listado
-  - alta (usuario/admin)
-  - habilitar/deshabilitar (baja lógica)
-- Dashboard de **estadísticas** con gráficos (ECharts).
+- Visualización de publicaciones.
+- Ordenamiento por fecha o likes.
+- Creación de publicaciones.
+- Publicaciones con texto e imagen opcional.
+- Dar y quitar like.
+- Eliminación de publicaciones propias.
+- Eliminación de publicaciones por parte de administrador.
 
-### 🧩 Extras del TP
-- **PWA** (instalable).
-- **Pipes propias** para reutilización y transformación de datos en la UI.
-- **Directivas propias** para comportamiento/estilos reutilizables.
+---
+
+## 💬 Comentarios
+
+- Visualización de comentarios por publicación.
+- Creación de comentarios.
+- Edición de comentarios propios.
+- Marcado visual de comentarios editados.
+- Paginación con opción de cargar más comentarios.
+
+---
+
+## 👤 Perfiles
+
+- Pantalla de perfil propio.
+- Visualización de datos del usuario.
+- Visualización de publicaciones propias.
+- Acceso a perfiles de otros usuarios desde el feed.
+
+---
+
+## 🧑‍💼 Dashboard administrador
+
+Funcionalidad disponible solo para usuarios con rol administrador.
+
+Incluye:
+
+- Listado de usuarios.
+- Alta de usuarios.
+- Alta de administradores.
+- Habilitación y deshabilitación de usuarios.
+- Visualización de estadísticas.
+- Gráficos mediante ECharts.
+
+---
+
+## 🧩 Extras del proyecto
+
+- PWA instalable.
+- Pipes propias.
+- Directivas propias.
+- Reutilización de componentes.
+- Feedback visual para acciones del usuario.
+- Manejo de expiración de sesión.
 
 ---
 
 ## 🧰 Tecnologías usadas
-- Angular + TypeScript (frontend)
-- HTML / CSS
-- ng-bootstrap (componentes UI)
-- ECharts (gráficos)
-- JWT (autenticación)
+
+- Angular
+- TypeScript
+- HTML
+- CSS
+- Bootstrap
+- ng-bootstrap
+- ECharts
+- JWT
+- API REST
+- Git
+- GitHub
 
 ---
 
-## ✅ Contexto del TP
-El trabajo se organizó por sprints e incluye: autenticación con expiración/renovación de sesión, CRUD de publicaciones con interacción social (likes y comentarios), perfiles, panel administrador y estadísticas, además de reutilización mediante pipes y directivas.
+## 🔗 Integración con backend
+
+Este frontend consume una API REST desarrollada con **NestJS y MongoDB**.
+
+El backend se encarga de:
+
+- Autenticación.
+- Emisión y renovación de JWT.
+- Usuarios.
+- Publicaciones.
+- Comentarios.
+- Likes.
+- Estadísticas.
+- Control de roles.
+
+Repositorio backend/API:
+
+https://github.com/JoaquinCarbonaro/Rumbo-Criollo-red-social-nestjs-api
+
+---
+
+## ✅ Contexto académico
+
+Este proyecto fue desarrollado como parte de **Programación IV**.
+
+El trabajo se organizó por etapas e incluye:
+
+- Autenticación con JWT.
+- CRUD de publicaciones.
+- Interacción social con likes y comentarios.
+- Perfiles de usuario.
+- Panel administrador.
+- Estadísticas.
+- Pipes y directivas propias.
+- Integración completa con backend.
 
 ---
 
 ## 💡 Lo que demuestra este proyecto
-- **Autenticación y seguridad en frontend**: rutas protegidas, manejo de JWT, interceptor y control de roles.
-- **Consumo de API REST**: integración completa con backend (login, publicaciones, comentarios, usuarios, estadísticas).
-- **Arquitectura y reutilización en Angular**: separación clara por módulos/componentes/servicios + pipes y directivas propias.
-- **UI/UX consistente**: uso de componentes visuales y feedback de sesión (manejo de expiración).
-- **Visualización de datos**: dashboard con métricas y gráficos.
+
+- Desarrollo frontend con Angular y TypeScript.
+- Consumo de API REST.
+- Manejo de autenticación con JWT.
+- Rutas protegidas.
+- Interceptor HTTP.
+- Control de roles.
+- Arquitectura por componentes y servicios.
+- Reutilización mediante pipes y directivas.
+- Visualización de datos con gráficos.
+- Construcción de una interfaz tipo red social.
 
 ---
 
 ## 👤 Autor
-Joaquín Carbonaro
+
+**Joaquín Carbonaro**
+
+GitHub: https://github.com/JoaquinCarbonaro  
+LinkedIn: https://www.linkedin.com/in/joaquin-carbonaro
