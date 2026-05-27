@@ -14,13 +14,13 @@ export const environment = {
   quickLogins: {
     //credenciales de usuario administrador
     admin: {
-      identifier: '',
-      password: ''
+      identifier: 'admin@rumbo.com',
+      password: 'RumboAdmin123'
     },
     //credenciales de usuario normal
     user: {
-      identifier: '',
-      password: ''
+      identifier: 'user@rumbo.com',
+      password: 'RumboTest123'
     }
   }
 }
